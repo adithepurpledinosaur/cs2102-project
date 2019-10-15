@@ -9,3 +9,13 @@ Make sure you have npm and postgres.
       `postgres://USER:PASSWORD@HOSTNAME:PORT/DATABASE`
 2. `npm install`
 3. `npm start`
+
+## Navigation
+
+There is currently no navigability between pages. Append the following to your localhost URL to reach various pages:
+- /about
+- /forms
+- /insert
+- /loops
+- /select
+- /table
