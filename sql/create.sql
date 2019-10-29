@@ -3,7 +3,7 @@
 CREATE TABLE Users (
 	uname varchar(15) PRIMARY KEY, 					/* Username */
 	uid SERIAL NOT NULL, 							/* Candidate key: User ID */
-	pwd varchar(16) NOT NULL, 						/* Password */
+	pwd varchar(65) NOT NULL, 						/* Password */
 	fname varchar(50) NOT NULL, 					/* Full name */
 	name varchar(15), 								/* Nickname that is preferred */
 	gender char(1), 								/* F = Female, M = Male */
