@@ -25,7 +25,7 @@ function findUser (username, callback) {
             return callback(null)
         } else if (data.rows.length == 1) {
             return callback(null, {
-                uname       : data.rows[0].uname,
+                username    : data.rows[0].uname,
                 passwordHash: data.rows[0].pwd,
             });
         } else {
