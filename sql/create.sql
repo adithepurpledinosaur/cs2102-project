@@ -1,26 +1,9 @@
 /* Change the schema default search path to 'group_project' (for current session only) */
 SET search_path = group_project;
 
-/* Wipe schema before inserting all tables */
-DROP TABLE IF EXISTS Users CASCADE;
-DROP TABLE IF EXISTS Driver CASCADE;
-DROP TABLE IF EXISTS Passenger CASCADE;
-DROP TABLE IF EXISTS Car CASCADE;
-DROP TABLE IF EXISTS Ride CASCADE;
-DROP TABLE IF EXISTS Reward CASCADE;
-DROP TABLE IF EXISTS Discount CASCADE;
-DROP TABLE IF EXISTS Points CASCADE;
-DROP TABLE IF EXISTS Obtains CASCADE;
-DROP TABLE IF EXISTS Bids CASCADE;
-DROP TABLE IF EXISTS Payment CASCADE;
-DROP TABLE IF EXISTS Cash CASCADE;
-DROP TABLE IF EXISTS Card CASCADE;
-DROP TABLE IF EXISTS Transacts CASCADE;
-
 /* Create the relational schemas */
 CREATE TABLE Users (
 	uname varchar(15) PRIMARY KEY, 					/* Username */
-	uid SERIAL NOT NULL, 							/* Candidate key: User ID */
 	pwd varchar(100) NOT NULL, 						/* Password */
 	fname varchar(50) NOT NULL, 					/* Full name */
 	name varchar(15), 								/* Nickname that is preferred */
@@ -48,8 +31,10 @@ CREATE TABLE Passenger (
 		ON DELETE CASCADE,
 	mid SERIAL NOT NULL,							/* Candidate key: Membership ID */
 	mstatus varchar(10) DEFAULT 'Member',			/* Membership status */
-	tpoints integer DEFAULT 100,					/* Accumulative reward points (upon joining: all members enjoy 100 points free) */
+	tpoints integer DEFAULT 100,					/* Total accumalated reward points (upon joining: all members enjoy 100 points free) */
+    cpoints integer DEFAULT 100,                    /* Current points user has after using points for Discount */
 	CHECK (tpoints >= 0),							/* Check if tpoints is valid */
+	CHECK (cpoints >= 0),							/* Check if cpoints is valid */ 
 	CHECK (											/* Check if mstatus is valid */
 			mstatus = 'Member'
 			OR mstatus = 'Premium'
@@ -257,14 +242,3 @@ CREATE TABLE Transacts (
 --should pcode be the primary key in Transact instead? 
 --So pcode in payment,card,cash will be foreign keys referecing Transacts.
 --potential area to put trigger? Upon adding transaction, update payment 	
-
---------------------------- TRIGGER FUNCTIONS --------------------------------------
-CREATE OR REPLACE FUNCTION upgrade_mship()
-RETURNS TRIGGER AS 
-$$
-BEGIN
-UPDATE
-
-CREATE TRIGGER check_upgrade
-AFTER INSERT OR UPDATE ON Passenger'
-FOR EACH STATEMENT WHEN NEW.tpoints >=
