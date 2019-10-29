@@ -7,8 +7,9 @@ Make sure you have npm and postgres.
 1. Start postgres instance
     * note: `DATABASE_URL` in `.env` is of the form
       `postgres://USER:PASSWORD@HOSTNAME:PORT/DATABASE`
-2. `npm install`
-3. `npm start`
+2. import the schema (`\i sql/drop.sql` and `\i sql/create.sql`)
+3. `npm install`
+4. `npm start`
 
 ## Navigation
 
