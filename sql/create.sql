@@ -1,9 +1,27 @@
--- vim: ts=4 sts=4 sw=4 noet
+/* Change the schema default search path to 'group_project' (for current session only) */
+SET search_path = group_project;
+
+/* Wipe schema before inserting all tables */
+DROP TABLE IF EXISTS Users CASCADE;
+DROP TABLE IF EXISTS Driver CASCADE;
+DROP TABLE IF EXISTS Passenger CASCADE;
+DROP TABLE IF EXISTS Car CASCADE;
+DROP TABLE IF EXISTS Ride CASCADE;
+DROP TABLE IF EXISTS Reward CASCADE;
+DROP TABLE IF EXISTS Discount CASCADE;
+DROP TABLE IF EXISTS Points CASCADE;
+DROP TABLE IF EXISTS Obtains CASCADE;
+DROP TABLE IF EXISTS Bids CASCADE;
+DROP TABLE IF EXISTS Payment CASCADE;
+DROP TABLE IF EXISTS Cash CASCADE;
+DROP TABLE IF EXISTS Card CASCADE;
+DROP TABLE IF EXISTS Transacts CASCADE;
+
 /* Create the relational schemas */
 CREATE TABLE Users (
 	uname varchar(15) PRIMARY KEY, 					/* Username */
 	uid SERIAL NOT NULL, 							/* Candidate key: User ID */
-	pwd varchar(16) NOT NULL, 						/* Password */
+	pwd varchar(100) NOT NULL, 						/* Password */
 	fname varchar(50) NOT NULL, 					/* Full name */
 	name varchar(15), 								/* Nickname that is preferred */
 	gender char(1), 								/* F = Female, M = Male */
@@ -11,7 +29,11 @@ CREATE TABLE Users (
 	addr varchar(100), 								/* Address */
 	cdate date DEFAULT current_date,				/* Date of account creation */
 	CHECK (cdate >= current_date),					/* Check if date is valid */
-	CHECK (current_date - dob >= 16)				/* Check if user is 16 y/o and above */
+	CHECK (date_part('year', age(dob)) >= 16),		/* Check if user is 16 y/o and above */
+    CHECK (                                         /* Check gender */
+            gender = 'M'
+            OR gender = 'F'
+          )   
 );
 
 CREATE TABLE Driver (
@@ -24,7 +46,7 @@ CREATE TABLE Driver (
 CREATE TABLE Passenger (
 	uname varchar(15) PRIMARY KEY REFERENCES Users
 		ON DELETE CASCADE,
-	mid	SERIAL NOT NULL,							/* Candidate key: Membership ID */
+	mid SERIAL NOT NULL,							/* Candidate key: Membership ID */
 	mstatus varchar(10) DEFAULT 'Member',			/* Membership status */
 	tpoints integer DEFAULT 100,					/* Accumulative reward points (upon joining: all members enjoy 100 points free) */
 	CHECK (tpoints >= 0),							/* Check if tpoints is valid */
@@ -44,8 +66,7 @@ CREATE TABLE Car (
 	model varchar(7) NOT NULL,
 	sdate date NOT NULL,							/* Start date of COE: Expires in 10 years */
 	PRIMARY KEY (uname, plate_no),
-	CHECK (current_date - sdate >= 1)				/* Check if the COE expiry: Minimum 1 year before expiry to register */
-
+	CHECK (date_part('year',age(sdate)) >= 1)		/* Check if the COE expiry: Minimum 1 year before expiry to register */
 );
 
 CREATE TABLE Ride (
@@ -67,6 +88,7 @@ CREATE TABLE Ride (
 );
 
 /*---------------------------- 		PASSENGER PART		 ----------------------------------------*/
+
 CREATE TABLE Reward (
 	rcode char(7) PRIMARY KEY,						/* Reward code (Eg. ABC0000) */
 	rid SERIAL NOT NULL,							/* Candidate key: Reward ID */
@@ -99,6 +121,7 @@ CREATE TABLE Obtains (								/* Passenger has... */
 	CHECK (sdatetime >= current_timestamp)			/* Check if the timestamp is valid */
 );
 
+
 CREATE TABLE Bids (
 	puname varchar(15),
 	duname varchar(15),
@@ -119,6 +142,39 @@ CREATE TABLE Bids (
 	CHECK (puname <> duname),						/* Make sures that the passenger and driver are not the same person */
 	CHECK (price > 0)								/* Checks if the price is valid */
 );
+
+------------------------------------ALTERNATE SUGGESTION-----------------------------------
+--is there a need for a points table? We can update points as a trigger?
+--Cases where points increase: 1) after every trip  2)After 10 rides?(idk if we want to do)
+--in any case we can do without a point table
+CREATE TABLE Reward (
+	rcode char(7) PRIMARY KEY,						/* Reward code (Eg. ABC0000) */
+	rid SERIAL NOT NULL,							/* Candidate key: Reward ID */
+	CHECK (											/* D = Discount, P = Point */
+			rcode LIKE 'D%'
+		   	OR rcode LIKE 'P%'
+		  )
+);
+
+CREATE TABLE AltDiscount (							/* Able to use the amount to deduct the ride fee */
+	rcode char(7) PRIMARY KEY REFERENCES Reward
+		ON DELETE CASCADE,
+ 	amt integer NOT NULL,									/* Value of disc*/
+	CHECK (amt > 0)
+);
+
+-- CREATE TABLE Points (								/* Able to use points to redeem discount codes */
+-- 	rcode char(7) PRIMARY KEY REFERENCES Reward
+-- 		ON DELETE CASCADE
+-- );
+
+CREATE TABLE AltObtains (								/* Passenger has... */
+	uname varchar(15) REFERENCES Passenger,
+	rcode char(7) REFERENCES Reward,
+	expdate timestamp DEFAULT (current_timestamp + interval '3 months'),	/* Date and time of issue */
+	PRIMARY KEY (uname, rcode)
+);
+
 
 /*---------------------------- 		TRANSACTION PART		 ----------------------------------------*/
 
@@ -191,5 +247,24 @@ CREATE TABLE Transacts (
 		  )
 );
 
--- triggers go here
--- mocks go here
+--review rewards system. For every trip, they obtain points? (according to price paid)
+--this can also be a trigger: upon insert on transaction, update points on Passenger uname
+--another trigger: upon points accumalated > threshold -> upgrade mship status
+--upon creation of acc, and upgrade of mship status, user gets a Discount code
+--find a way to track what Discounts user has -> create table Has_discount (uname, D)
+--make our life easier, make default discount codes last for 3 months
+
+--should pcode be the primary key in Transact instead? 
+--So pcode in payment,card,cash will be foreign keys referecing Transacts.
+--potential area to put trigger? Upon adding transaction, update payment 	
+
+--------------------------- TRIGGER FUNCTIONS --------------------------------------
+CREATE OR REPLACE FUNCTION upgrade_mship()
+RETURNS TRIGGER AS 
+$$
+BEGIN
+UPDATE
+
+CREATE TRIGGER check_upgrade
+AFTER INSERT OR UPDATE ON Passenger'
+FOR EACH STATEMENT WHEN NEW.tpoints >=
