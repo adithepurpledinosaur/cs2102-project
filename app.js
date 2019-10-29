@@ -6,8 +6,16 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const bodyParser = require('body-parser');
+const session = require('express-session')
+const passport = require('passport');
 
 const app = express();
+
+app.use(bodyParser.urlencoded({extended: false}));
+
+require('./auth').init(app);
+app.use(passport.initialize());
+app.use(passport.session());
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
