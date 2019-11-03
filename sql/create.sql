@@ -50,19 +50,22 @@ CREATE TABLE Car (
 	plate_no integer NOT NULL,						/* Plate number: Assuming all integers (eg. 1234, 1111, 0000) */
 	model varchar(7) NOT NULL,
 	sdate date NOT NULL,							/* Start date of COE: Expires in 10 years */
-	PRIMARY KEY (uname, plate_no),
+	num_seats integer NOT NULL,
+	PRIMARY KEY (uname, plate_no,num_seats),
 	CHECK (date_part('year',age(sdate)) >= 1)		/* Check if the COE expiry: Minimum 1 year before expiry to register */
 );
 
 CREATE TABLE Ride (
 	uname varchar(15),
 	plate_no integer,
+	num_seats integer,
 	origin varchar(20),								/* Place to pick passenger up */
 	dest varchar(20),								/* Destination: Place to drop passenger off */
 	ptime time,										/* Pick-up time */
 	pdate date,										/* Pick-up date */
 	dtime time,										/* Drop-off time */
-	FOREIGN KEY (uname, plate_no) REFERENCES Car
+	curr_pax integer DEFAULT 0,
+	FOREIGN KEY (uname, plate_no, num_seats) REFERENCES Car
 		ON DELETE CASCADE,
 	PRIMARY KEY (uname, plate_no, origin, dest, ptime, pdate),
 	CHECK (											/* Check if the ride is at least 1hour from time of registration */
@@ -72,61 +75,69 @@ CREATE TABLE Ride (
 		  )
 );
 
-/*---------------------------- 		PASSENGER PART		 ----------------------------------------*/
+CREATE TABLE DObtains (									/* Driver obtain driver rewards */
+	uname varchar(15) REFERENCES Driver,
+	rcode char(7) REFERENCES DReward,
+	expdate timestamp DEFAULT (current_timestamp + interval '3 months'),	/* Date and time of issue */
+	PRIMARY KEY (uname, rcode)
+)
 
-CREATE TABLE Reward (
-	rcode char(7) PRIMARY KEY,						/* Reward code (Eg. ABC0000) */
-	rid SERIAL NOT NULL,							/* Candidate key: Reward ID */
-	CHECK (											/* D = Discount, P = Point */
-			rcode LIKE 'D%'
-		   	OR rcode LIKE 'P%'
-		  )
-);
+-- /*---------------------------- 		PASSENGER PART		 ----------------------------------------*/
 
-CREATE TABLE Discount (								/* Able to use the amount to deduct the ride fee */
-	rcode char(7) PRIMARY KEY REFERENCES Reward
-		ON DELETE CASCADE,
-	duration integer,								/* Life span of the discount - Null = Forever */
-	redeemed boolean DEFAULT FALSE,					/* States if the discount has been redeemed */
-	CHECK (duration > 0)							/* Check if duration is valid */
-);
+-- CREATE TABLE Reward (
+-- 	rcode char(7) PRIMARY KEY,						/* Reward code (Eg. ABC0000) */
+-- 	rid SERIAL NOT NULL,							/* Candidate key: Reward ID */
+-- 	CHECK (											/* D = Discount, P = Point */
+-- 			rcode LIKE 'D%'
+-- 		   	OR rcode LIKE 'P%'
+-- 		  )
+-- );
 
-CREATE TABLE Points (								/* Able to use points to redeem discount codes */
-	rcode char(7) PRIMARY KEY REFERENCES Reward
-		ON DELETE CASCADE
-);
+-- CREATE TABLE Discount (								/* Able to use the amount to deduct the ride fee */
+-- 	rcode char(7) PRIMARY KEY REFERENCES Reward
+-- 		ON DELETE CASCADE,
+-- 	duration integer,								/* Life span of the discount - Null = Forever */
+-- 	redeemed boolean DEFAULT FALSE,					/* States if the discount has been redeemed */
+-- 	CHECK (duration > 0)							/* Check if duration is valid */
+-- );
 
-CREATE TABLE Obtains (								/* Passenger has... */
-	uname varchar(15) REFERENCES Passenger,
-	rcode char(7) REFERENCES Reward,
-	amt integer NOT NULL,							/* Amount given: $$ dicounted, # of points */
-	sdatetime timestamp DEFAULT current_timestamp,	/* Date and time of issue */
-	PRIMARY KEY (uname, rcode, sdatetime),
-	CHECK (amt > 0),								/* Check if amt is valid */
-	CHECK (sdatetime >= current_timestamp)			/* Check if the timestamp is valid */
-);
+-- CREATE TABLE Points (								/* Able to use points to redeem discount codes */
+-- 	rcode char(7) PRIMARY KEY REFERENCES Reward
+-- 		ON DELETE CASCADE
+-- );
+
+-- CREATE TABLE Obtains (								/* Passenger has... */
+-- 	uname varchar(15) REFERENCES Passenger,
+-- 	rcode char(7) REFERENCES Reward,
+-- 	amt integer NOT NULL,							/* Amount given: $$ dicounted, # of points */
+-- 	sdatetime timestamp DEFAULT current_timestamp,	/* Date and time of issue */
+-- 	PRIMARY KEY (uname, rcode, sdatetime),
+-- 	CHECK (amt > 0),								/* Check if amt is valid */
+-- 	CHECK (sdatetime >= current_timestamp)			/* Check if the timestamp is valid */
+-- );
 
 
-CREATE TABLE Bids (
-	puname varchar(15),
-	duname varchar(15),
-	plate_no integer,
-	origin varchar(20),
-	dest varchar(20),
-	ptime time,
-	pdate date,
-	won boolean DEFAULT FALSE,						/* States if the passenger has won the bid */
-	price integer NOT NULL,							/* Price of the bid */
-	FOREIGN KEY (puname)
-		REFERENCES Passenger (uname)
-		ON DELETE CASCADE,
-	FOREIGN KEY (duname, plate_no, origin, dest, ptime, pdate)
-		REFERENCES Ride (uname, plate_no, origin, dest, ptime, pdate)
-		ON DELETE CASCADE,
-	PRIMARY KEY (puname, duname, plate_no, origin, dest, ptime, pdate),
-	CHECK (puname <> duname),						/* Make sures that the passenger and driver are not the same person */
-	CHECK (price > 0)								/* Checks if the price is valid */
-);
+-- CREATE TABLE Bids (
+-- 	puname varchar(15),
+-- 	duname varchar(15),
+-- 	plate_no integer,
+-- 	origin varchar(20),
+-- 	dest varchar(20),
+-- 	ptime time,
+-- 	pdate date,	
+-- 	won boolean DEFAULT FALSE,						/* States if the passenger has won the bid */
+-- 	price integer NOT NULL,							/* Price of the bid */
+-- 	FOREIGN KEY (puname)
+-- 		REFERENCES Passenger (uname)
+-- 		ON DELETE CASCADE,
+-- 	FOREIGN KEY (duname, plate_no, origin, dest, ptime, pdate)
+-- 		REFERENCES Ride (uname, plate_no, origin, dest, ptime, pdate)
+-- 		ON DELETE CASCADE,
+-- 	PRIMARY KEY (puname, duname, plate_no, origin, dest, ptime, pdate),
+-- 	CHECK (ptime > current_time + INTERVAL '1 hour'), /* Check that time passenger bids is 1hr before ride */
+-- 	CHECK (puname <> duname),						/* Make sures that the passenger and driver are not the same person */
+-- 	CHECK (price > 0)								/* Checks if the price is valid */
+-- );
 
 ------------------------------------ALTERNATE SUGGESTION-----------------------------------
 --is there a need for a points table? We can update points as a trigger?
@@ -135,6 +146,7 @@ CREATE TABLE Bids (
 CREATE TABLE Reward (
 	rcode char(7) PRIMARY KEY,						/* Reward code (Eg. ABC0000) */
 	rid SERIAL NOT NULL,							/* Candidate key: Reward ID */
+	cost integer NOT NULL,
 	CHECK (											/* D = Discount, P = Point */
 			rcode LIKE 'D%'
 		   	OR rcode LIKE 'P%'
@@ -160,7 +172,27 @@ CREATE TABLE AltObtains (								/* Passenger has... */
 	PRIMARY KEY (uname, rcode)
 );
 
-
+CREATE TABLE Bid (
+	puname varchar(15),
+	duname varchar(15),
+	plate_no integer,
+	origin varchar(20),
+	dest varchar(20),
+	ptime time,
+	pdate date,	
+	won boolean DEFAULT FALSE,						/* States if the passenger has won the bid */
+	price integer NOT NULL,							/* Price of the bid */
+	FOREIGN KEY (puname)
+		REFERENCES Passenger (uname)
+		ON DELETE CASCADE,
+	FOREIGN KEY (duname, plate_no, origin, dest, ptime, pdate)
+		REFERENCES Ride (uname, plate_no, origin, dest, ptime, pdate)
+		ON DELETE CASCADE,
+	PRIMARY KEY (puname, duname, plate_no, origin, dest, ptime, pdate),
+	CHECK (ptime > current_time + INTERVAL '1 hour'), /* Check that time passenger bids is 1hr before ride */
+	CHECK (puname <> duname),						/* Make sures that the passenger and driver are not the same person */
+	CHECK (price > 0)								/* Checks if the price is valid */
+);
 /*---------------------------- 		TRANSACTION PART		 ----------------------------------------*/
 
 CREATE TABLE Payment (
