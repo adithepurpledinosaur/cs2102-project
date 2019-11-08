@@ -9,6 +9,11 @@ const bodyParser = require('body-parser');
 const session = require('express-session')
 const passport = require('passport');
 
+/* <<< Routers     */
+var manageCarsRouter = require('./routes/manageCars');
+/*     Routers >>> */
+
+
 const app = express();
 
 app.use(bodyParser.urlencoded({extended: false}));
@@ -26,6 +31,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+/* <<< Routes     */
+app.use('/manage-cars', manageCarsRouter);
+/*     Routes >>> */
+
 
 require('./routes').init(app);
 
