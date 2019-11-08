@@ -173,7 +173,7 @@ CREATE TABLE Bid (
 
 
 CREATE TABLE Transactions (
-	tcode varchar(15) PRIMARY KEY,
+	--tcode varchar(7) PRIMARY KEY,
 	puname varchar(15),
 	duname varchar(15),
 	plate_num integer,
@@ -181,21 +181,23 @@ CREATE TABLE Transactions (
 	dest varchar(20),
 	ptime time,
 	pdate date,
-	r_issue char(7),
+	--r_issue char(7),
 	r_redeem char (7) DEFAULT NULL,
+	oprice integer,									/* AMount received by Driver */
 	tprice integer,									/* Total price Passenger paid */
 	prating integer,								/* Rating given to passenger by driver */
 	drating integer,								/* Rating given to driver by passenger */
-	ptype varchar(7) NOT NULL,
+	ptype varchar(7),
 	closed boolean DEFAULT FALSE,
 	FOREIGN KEY (puname)
 		REFERENCES Passenger (uname),
-	FOREIGN KEY (r_issue)
-		REFERENCES Reward (rcode),
+	-- FOREIGN KEY (r_issue)
+	-- 	REFERENCES Reward (rcode),
 	FOREIGN KEY (r_redeem)
 		REFERENCES Reward (rcode),
 	FOREIGN KEY (duname, plate_num, origin, dest, ptime, pdate)
 		REFERENCES Ride (uname, plate_num, origin, dest, ptime, pdate),
+	PRIMARY KEY (puname, duname, plate_num, origin, dest, ptime, pdate),
 	CHECK (puname <> duname),						/* Make sures that the passenger */
 													/* and driver are not the same person */
 	CHECK (											/* Passenger ratings: Range of 0 to 5 inclusive */

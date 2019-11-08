@@ -1,6 +1,24 @@
 
 --------------------------- TRIGGER FUNCTIONS --------------------------------------
 
+--All User will be added as a passenger--
+
+DROP FUNCTION update_passenger() CASCADE;
+CREATE OR REPLACE FUNCTION update_passenger()
+RETURNS TRIGGER AS 
+$$ 
+BEGIN
+	INSERT INTO Passenger VALUES (NEW.uname,DEFAULT,DEFAULT, DEFAULT, DEFAULT);
+	RAISE NOTICE 'New passenger added';
+	RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER new_user
+AFTER INSERT ON Users
+FOR EACH ROW 
+EXECUTE PROCEDURE update_passenger();
+
 ----Initial points upon sign-up----
 DROP FUNCTION award_points() CASCADE;
 CREATE OR REPLACE FUNCTION award_points()
@@ -9,6 +27,8 @@ $$ DECLARE newuname varchar(15);
 BEGIN
 	newuname := NEW.uname;
 	INSERT INTO Obtains VALUES (NEW.uname, 'R000001', DEFAULT, DEFAULT);
+
+	UPDATE Passenger P SET tpoints = tpoints + 50 WHERE P.uname = NEW.uname;
 	RAISE NOTICE 'Sign-Up points awarded';
 	RETURN NULL;
 END;
@@ -163,15 +183,7 @@ EXECUTE PROCEDURE remove_ride();
 DROP FUNCTION update_btime() CASCADE;
 CREATE OR REPLACE FUNCTION update_btime()
 RETURNS TRIGGER AS 
-$$ DECLARE	
-	newpuname varchar(15);
-	newduname varchar(15);
-	newplatenum integer;
-	neworigin  varchar(20);
-	newdest varchar(20);
-	newptime time;
-	newpdate date;
-	newprice integer;
+$$ 
 BEGIN  
 
 		UPDATE Bid SET btime = current_time WHERE
@@ -228,7 +240,10 @@ BEGIN
 
 		UPDATE Passenger P SET P.tpoints = P.tpoints + 5 
 		WHERE P.uname = NEW.puname;
-	END LOOP;
+		
+		UPDATE Passenger P SET P.cpoints = P.cpoints + 5 
+		WHERE P.uname = NEW.puname;
+	END LOOP; 
 	RETURN NULL;
 
 	-- UPDATE Passenger P 
@@ -239,8 +254,8 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER p_ride
-AFTER UPDATE ON Transactions 
-FOR EACH ROW 
+AFTER UPDATE of closed ON Transactions
+FOR EACH ROW WHEN (NEW.closed = TRUE)
 EXECUTE PROCEDURE issue_points();
 
 
@@ -377,7 +392,7 @@ EXECUTE PROCEDURE update_drating();
 DROP FUNCTION issue_benefit() CASCADE;
 CREATE OR REPLACE FUNCTION issue_benefit()
 RETURNS TRIGGER AS 
-$$ DECLARE 
+$$
 BEGIN  
 	INSERT INTO Earns VALUES (NEW.duname, 'B000001', DEFAULT);
 END;
@@ -387,3 +402,23 @@ CREATE TRIGGER d_ride
 AFTER UPDATE ON Transactions 
 FOR EACH ROW WHEN (NEW.closed = TRUE)
 EXECUTE PROCEDURE issue_benefit();
+
+--revisit driver benefits-- 
+---------------------------
+
+--open transaction--
+DROP FUNCTION open_transaction() CASCADE;
+CREATE OR REPLACE FUNCTION open_transaction()
+RETURNS TRIGGER AS 
+$$ 
+BEGIN  
+	INSERT INTO Transactions VALUES (NEW.puname, NEW.duname, NEW.plate_num, NEW.origin, NEW.dest, NEW.ptime, NEW.pdate, DEFAULT, NEW.price, NEW.price, NULL, NULL, NULL, DEFAULT);
+	RAISE NOTICE 'Transaction Opened';
+	RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER bid_won
+AFTER UPDATE of won ON Bid 
+FOR EACH ROW WHEN (NEW.won = TRUE)
+EXECUTE PROCEDURE open_transaction();

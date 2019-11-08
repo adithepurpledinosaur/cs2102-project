@@ -71,5 +71,14 @@ INSERT INTO Bid VALUES ('Dad', 'Dad', 5, 'Sengkang', 'Hougang', '13:00:00', '201
 
 
 UPDATE BID SET price = 3
-    WHERE (puname = 'Dad' AND duname = 'Bob' AND plate_num = 3 AND origin = 'Sengkang' AND dest = 'Hougang' AND ptime = '12:00:00' AND pdate = '2019-11-09' AND price = 4);
+    WHERE (puname = 'Dad' AND duname = 'Bob' AND plate_num = 3 AND origin = 'Sengkang' AND dest = 'Hougang' AND ptime = '12:00:00' AND pdate = '2019-11-09' AND price = 3);
 
+UPDATE BID SET won = TRUE 
+WHERE (puname = 'Dad' AND duname = 'Bob' AND plate_num = 3 AND origin = 'Sengkang' AND dest = 'Hougang' AND ptime = '12:00:00' AND pdate = '2019-11-09' AND price = 3);
+
+--When driver closes transaction--
+UPDATE Transactions SET closed = true
+WHERE (puname = 'Dad' AND duname = 'Bob' AND plate_num = 3 AND origin = 'Sengkang' AND dest = 'Hougang' AND ptime = '12:00:00' AND pdate = '2019-11-09');
+--prompt user to input disc code and rating, and driver rating and ptype
+UPDATE Transactions SET r_
+WHERE (puname = 'Dad' AND duname = 'Bob' AND plate_num = 3 AND origin = 'Sengkang' AND dest = 'Hougang' AND ptime = '12:00:00' AND pdate = '2019-11-09');
