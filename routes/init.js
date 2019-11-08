@@ -22,8 +22,7 @@ function initRouter(app) {
         successRedirect: '/dashboard',
         failureRedirect: '/login?login=fail'
     }));
-
-    app.get('/about', passport.authMiddleware(), require('./samples/about'));
+    app.get('/logout', passport.authMiddleware(), logout);
 }
 
 function create_user(req, res, next) {
@@ -41,6 +40,12 @@ function create_user(req, res, next) {
 
 function page(pageName) {
     return (req, res, next) => res.render(pageName, { page: pageName, auth: false })
+}
+
+function logout(req, res, next) {
+    req.session.destroy();
+    req.logout();
+    res.redirect('/');
 }
 
 module.exports = initRouter;
