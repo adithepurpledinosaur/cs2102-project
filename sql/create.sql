@@ -14,8 +14,8 @@ CREATE TABLE Users (
 	CHECK (cdate >= current_date),					/* Check if date is valid */
 	CHECK (date_part('year', age(dob)) >= 16),		/* Check if user is 16 y/o and above */
     CHECK (                                         /* Check gender */
-            UPPER(gender) = 'M'
-            OR UPPER(gender) = 'F'
+            gender = 'M'
+            OR gender = 'F'
           )   
 );
 
@@ -43,9 +43,9 @@ CREATE TABLE Passenger (
 	CHECK (tpoints >= 0),							/* Check if tpoints is valid */
 	CHECK (cpoints >= 0),							/* Check if cpoints is valid */ 
 	CHECK (											/* Check if mstatus is valid */
-			UPPER(mstatus) = 'MEMBER'
-			OR UPPER(mstatus) = 'PREMIUM'
-			OR UPPER(mstatus) = 'VIP'
+			mstatus = 'MEMBER'
+			OR mstatus = 'PREMIUM'
+			OR mstatus = 'VIP'
 		  )
 );
 
@@ -112,9 +112,9 @@ CREATE TABLE Reward (
 	rcode char(7) PRIMARY KEY,						/* Reward code (Eg. ABC0000) */
 	expired boolean DEFAULT false,					/* States if reward has expired */
 	CHECK (											/* D = Discount, P = Point */
-			UPPER(rcode) LIKE 'D%'
+			rcode LIKE 'D%'
 		   	OR
-			UPPER(rcode) LIKE 'R%'
+			rcode LIKE 'R%'
 		  )
 );
 
