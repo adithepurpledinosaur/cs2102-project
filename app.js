@@ -9,16 +9,6 @@ const bodyParser = require('body-parser');
 const session = require('express-session')
 const passport = require('passport');
 
-/* <<< Routers     */
-var manageCarsRouter = require('./routes/manageCars');
-var biddingRouter = require('./routes/bidding');
-var transactionRouter = require('./routes/transaction');
-var rewardsRouter = require('./routes/rewards');
-var benefitsRouter = require('./routes/benefits');
-var registerRouter = require('./routes/register');
-/*     Routers >>> */
-
-
 const app = express();
 
 app.use(bodyParser.urlencoded({extended: false}));
@@ -41,16 +31,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-
-/* <<< Routes     */
-app.use('/manage-cars', manageCarsRouter);
-app.use('/bidding', biddingRouter);
-app.use('/transaction', transactionRouter);
-app.use('/rewards', rewardsRouter);
-app.use('/benefits', benefitsRouter);
-app.use('/register', registerRouter);
-/*     Routes >>> */
-
 
 require('./routes').init(app);
 

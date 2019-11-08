@@ -12,18 +12,18 @@ const pool = new Pool({
 const salt  = bcrypt.genSaltSync(10);
 
 function initRouter(app) {
-    app.use('/', require('./indexRoute'));
+    app.get('/', page('index'));
 
     app.get('/register', passport.antiMiddleware(), page('register'));
     app.post('/register', passport.antiMiddleware(), create_user);
 
     app.get('/login', passport.antiMiddleware(), page('login'));
     app.post('/login', passport.authenticate('local', {
-        successRedirect: '/about',  // use some dummy page that's behind authwall for now
+        successRedirect: '/dashboard',
         failureRedirect: '/login?login=fail'
     }));
 
-    app.use('/about', passport.authMiddleware(), require('./about'));
+    app.get('/about', passport.authMiddleware(), require('./samples/about'));
 }
 
 function create_user(req, res, next) {
