@@ -11,6 +11,7 @@ const passport = require('passport');
 
 /* <<< Routers     */
 var manageCarsRouter = require('./routes/manageCars');
+var biddingRouter = require('./routes/bidding');
 /*     Routers >>> */
 
 
@@ -34,6 +35,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 /* <<< Routes     */
 app.use('/manage-cars', manageCarsRouter);
+app.use('/bidding', biddingRouter);
 /*     Routes >>> */
 
 
