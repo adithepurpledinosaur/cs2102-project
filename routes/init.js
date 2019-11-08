@@ -12,17 +12,33 @@ const pool = new Pool({
 const salt  = bcrypt.genSaltSync(10);
 
 function initRouter(app) {
-    app.get('/', passport.antiMiddleware(), page('index'));
+    app.get('/', passport.antiMiddleware(), public_page('index'));
 
-    app.get('/register', passport.antiMiddleware(), page('register'));
+    app.get('/register', passport.antiMiddleware(), public_page('register'));
     app.post('/register', passport.antiMiddleware(), create_user);
 
-    app.get('/login', passport.antiMiddleware(), page('login'));
+    app.get('/login', passport.antiMiddleware(), public_page('login'));
     app.post('/login', passport.authenticate('local', {
         successRedirect: '/dashboard',
         failureRedirect: '/login?login=fail'
     }));
     app.get('/logout', passport.authMiddleware(), logout);
+
+    app.get('/dashboard', passport.authMiddleware(), (req, res, next) => render(req, res, 'dashboard'));
+}
+
+// renders a page behind the authwall, with username accessible in ejs and possibly other stuff
+function render(req, res, page, other) {
+    var info = {
+        page: page,
+        username: req.user.username,
+    };
+    if(other) {
+        for(var fld in other) {
+            info[fld] = other[fld];
+        }
+    }
+    res.render(page, info);
 }
 
 function create_user(req, res, next) {
@@ -38,8 +54,10 @@ function create_user(req, res, next) {
         })
 }
 
-function page(pageName) {
-    return (req, res, next) => res.render(pageName, { page: pageName, auth: false })
+
+// renders a page that everyone can see, such pages require no authentication context
+function public_page(pageName) {
+    return (req, res, next) => res.render(pageName);
 }
 
 function logout(req, res, next) {

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+    <% include partial/header.ejs %>
+    <% include partial/navbar.ejs %>
+</head>
+<body>
+    <h1>Hi <%= username %></h1>
+    <table class="table">
+        <thead class="thead-light">
+            <tr>
+                <th scope="col">User</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td><a href="/userprofile">Update my personal information</a></td></tr>
+            <tr><td><a href="/logout">Logout</a></td></tr>
+        </tbody>
+    </table>
+</body>
+</html>
