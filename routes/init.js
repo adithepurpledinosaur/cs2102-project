@@ -12,7 +12,7 @@ const pool = new Pool({
 const salt  = bcrypt.genSaltSync(10);
 
 function initRouter(app) {
-    app.get('/', page('index'));
+    app.get('/', passport.antiMiddleware(), page('index'));
 
     app.get('/register', passport.antiMiddleware(), page('register'));
     app.post('/register', passport.antiMiddleware(), create_user);
