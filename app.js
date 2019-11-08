@@ -15,6 +15,7 @@ var biddingRouter = require('./routes/bidding');
 var transactionRouter = require('./routes/transaction');
 var rewardsRouter = require('./routes/rewards');
 var benefitsRouter = require('./routes/benefits');
+var registerRouter = require('./routes/register');
 /*     Routers >>> */
 
 
@@ -42,6 +43,7 @@ app.use('/bidding', biddingRouter);
 app.use('/transaction', transactionRouter);
 app.use('/rewards', rewardsRouter);
 app.use('/benefits', benefitsRouter);
+app.use('/register', registerRouter);
 /*     Routes >>> */
 
 
