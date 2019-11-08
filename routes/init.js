@@ -27,6 +27,20 @@ function initRouter(app) {
     app.get('/dashboard', passport.authMiddleware(), (req, res, next) => render(req, res, 'dashboard'));
     app.get('/updateprofile', passport.authMiddleware(), show_updateprofile);
     app.post('/updateprofile', passport.authMiddleware(), do_updateprofile);
+
+    app.get('/unlockpassenger', passport.authMiddleware(), unlock_passenger);
+    app.get('/unlockdriver', passport.authMiddleware(), unlock_driver);
+}
+
+function unlock_driver(req, res, next) {
+    pool.query(sql_query.query.create_driver, [req.user.username])
+        .then(() => res.redirect("/dashboard?msg=driver%20features%20unlocked"))
+        .catch(err => res.redirect("/dashboard?msg=already%20a%20driver"));
+}
+function unlock_passenger(req, res, next) {
+    pool.query(sql_query.query.create_passenger, [req.user.username])
+        .then(() => res.redirect("/dashboard?msg=passenger%20features%20unlocked"))
+        .catch(err => res.redirect("/dashboard?msg=already%20a%20passenger"));
 }
 
 function do_updateprofile(req, res, next) {
