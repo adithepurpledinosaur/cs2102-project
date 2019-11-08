@@ -30,6 +30,8 @@ function initRouter(app) {
 
     app.get('/unlockpassenger', passport.authMiddleware(), unlock_passenger);
     app.get('/unlockdriver', passport.authMiddleware(), unlock_driver);
+
+    app.get('/mycars', (req, res, next) => res.render('mycars'));
 }
 
 function unlock_driver(req, res, next) {
