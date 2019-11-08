@@ -13,6 +13,7 @@ const passport = require('passport');
 var manageCarsRouter = require('./routes/manageCars');
 var biddingRouter = require('./routes/bidding');
 var transactionRouter = require('./routes/transaction');
+var rewardsRouter = require('./routes/rewards');
 /*     Routers >>> */
 
 
@@ -38,6 +39,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/manage-cars', manageCarsRouter);
 app.use('/bidding', biddingRouter);
 app.use('/transaction', transactionRouter);
+app.use('/rewards', rewardsRouter);
 /*     Routes >>> */
 
 
