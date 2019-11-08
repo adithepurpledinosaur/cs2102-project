@@ -14,7 +14,14 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
 </head>
 <body>
-    <h1><%= title%></h1>
+
+<script>
+    function getCarPlate(rowNum) {
+        return document.querySelector('row' + rowNum).dataset.plate_no;
+    }
+</script>
+
+    <h1><%= title %></h1>
     <table class="table">
         <thead class="thead-light">
             <tr>
@@ -29,30 +36,69 @@
             <!-- Use this once SQL Query is up -->
             <!-- % for(var i=0; i<data.length; i++) { %>
                 <tr>
-                    <td>%= data[i].plate_no %></td>
-                    <td>%= data[i].model %></td>
-                    <td>%= data[i].sdate %></td>
+                    <td id={%= 'row' + i%> >{%= data[i].plate_no %></td>
+                    <td>{%= data[i].model %></td>
+                    <td>{%= data[i].sdate %></td>
+                    <td>
+                        <form action="/">
+                            <input type="hidden" id="carPlate" name="carPlate"
+                                value={% document.querySelector('row' + rowNum).dataset.plate_no %>>
+                            <input type="submit" value="Edit">
+                        </form>
+                        <form action="/">
+                            <input type="submit" value="Delete">
+                        </form>
+                    </td>
                 </tr>
             % } %> -->
             <tr>
-                <td>A0000001A</td>
-                <td>Leslie Cole</td>
-                <td>SOC</td>
-                <td><button><a href="/">Edit</a></button><button>Delete</button></td>
+                <td>SGT1451L</td>
+                <td>Toyota Prius</td>
+                <td>19/02/2020</td>
+                <td>
+                    <form action="/">
+                        <input type="submit" value="Edit">
+                    </form>
+                    <form action="/">
+                        <input type="submit" value="Delete">
+                    </form>
+                </td>
             </tr>
             <tr>
-                <td>A0000002B</td>
-                <td>Myra Morgan</td>
-                <td>SOC</td>
-                <td><button>Edit</button><button>Delete</button></td>
+                <td>SGT1451L</td>
+                <td>Toyota Prius</td>
+                <td>19/02/2020</td>
+                <td>
+                    <form action="/">
+                        <input type="submit" value="Edit">
+                    </form>
+                    <form action="/">
+                        <input type="submit" value="Delete">
+                    </form>
+                </td>
             </tr>
             <tr>
-                <td>A0000003C</td>
-                <td>Raymond Benson</td>
-                <td>SOC</td>
-                <td><button>Edit</button><button>Delete</button></td>
+                    <td>SGT1451L</td>
+                    <td>Toyota Prius</td>
+                    <td>19/02/2020</td>
+                    <td>
+                        <form action="/">
+                            <input type="submit" value="Edit">
+                        </form>
+                        <form action="/">
+                            <input type="submit" value="Delete">
+                        </form>
+                    </td>
             </tr>
         </tbody>
     </table>
+    
+    <h2>Add Car</h2>
+    <form action="/">
+        Plate No <input type="text" name="Plate No"><br>
+        Model <input type="text" name="Model"><br>
+        COE Expiry <input type="date" name="COE Expiry"><br>
+        <input type="submit" value="Add Car">
+    </form>
 </body>
 </html>
