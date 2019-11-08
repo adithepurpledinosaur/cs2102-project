@@ -1,0 +1,278 @@
+<!-- 2 tables, 1 for not closed transactions, other to do rating -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Page Title -->
+    <title>Transaction</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    
+    <!-- CSS for Styling -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    
+    <!-- JavaScript for Interactivity -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+</head>
+<body>
+    <h1><%= title %></h1>
+    <br>
+    <!-- FOR DRIVERS ONLY -->
+    <h2>Rate Transactions</h2>
+    <h7>for drivers only. pls remove this line before deployment</h7>
+    <table class="table">
+        <thead class="thead-light">
+            <tr>
+                <th scope="col">Trip Date</th>
+                <th scope="col">Trip Time</th>
+                <th scope="col">Origin</th>
+                <th scope="col">Destination</th>
+                <th scope="col">Car Used</th>
+                <th scope="col">Total Earnings</th>
+                <th scope="col">Passenger</th>
+                <th scope="col">Passenger Rating</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>19/12/2019</td>
+                <td>3:19PM</td>
+                <td>Sengkang</td>
+                <td>Punggol</td>
+                <td>SGT1451L</td>
+                <td>$5.00</td>
+                <td>Jane Doe</td>
+                <td>
+                    <form action="/" id="ratingForm">
+                        <select name="rating" form="ratingForm">
+                            <option value="0">0.0</option>
+                            <option value="1">1.0</option>
+                            <option value="2">2.0</option>
+                            <option value="3">3.0</option>
+                            <option value="4">4.0</option>
+                            <option value="5">5.0</option>
+                        </select>
+                        <input type="submit" value="Rate Passenger">
+                    </form>
+                </td>
+            </tr>
+            <tr>
+                <td>19/12/2019</td>
+                <td>3:19PM</td>
+                <td>Sengkang</td>
+                <td>Punggol</td>
+                <td>SGT1451L</td>
+                <td>$5.00</td>
+                <td>Jane Doe</td>
+                <td>
+                    <form action="/" id="ratingForm">
+                        <select name="rating" form="ratingForm">
+                            <option value="0">0.0</option>
+                            <option value="1">1.0</option>
+                            <option value="2">2.0</option>
+                            <option value="3">3.0</option>
+                            <option value="4">4.0</option>
+                            <option value="5">5.0</option>
+                        </select>
+                        <input type="submit" value="Rate Passenger">
+                    </form>
+                </td>
+            </tr>
+            <tr>
+                <td>19/12/2019</td>
+                <td>3:19PM</td>
+                <td>Sengkang</td>
+                <td>Punggol</td>
+                <td>SGT1451L</td>
+                <td>$5.00</td>
+                <td>Jane Doe</td>
+                <td>
+                    <form action="/" id="ratingForm">
+                        <select name="rating" form="ratingForm">
+                            <option value="0">0.0</option>
+                            <option value="1">1.0</option>
+                            <option value="2">2.0</option>
+                            <option value="3">3.0</option>
+                            <option value="4">4.0</option>
+                            <option value="5">5.0</option>
+                        </select>
+                        <input type="submit" value="Rate Passenger">
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <!-- FOR PASSENGERS ONLY -->
+    <h2>Rate Transactions</h2>
+    <h7>for passengers only. pls remove this line before deployment</h7>
+    <table class="table">
+        <thead class="thead-light">
+            <tr>
+                <th scope="col">Trip Date</th>
+                <th scope="col">Trip Time</th>
+                <th scope="col">Origin</th>
+                <th scope="col">Destination</th>
+                <th scope="col">Car Plate No</th>
+                <th scope="col">Trip Cost</th>
+                <th scope="col">Driver Name</th>
+                <th scope="col">Driver Rating</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>19/12/2019</td>
+                <td>3:19PM</td>
+                <td>Sengkang</td>
+                <td>Punggol</td>
+                <td>SGT1451L</td>
+                <td>$5.00</td>
+                <td>Jack Ma</td>
+                <td>
+                    <form action="/" id="ratingForm">
+                        <select name="rating" form="ratingForm">
+                            <option value="0">0.0</option>
+                            <option value="1">1.0</option>
+                            <option value="2">2.0</option>
+                            <option value="3">3.0</option>
+                            <option value="4">4.0</option>
+                            <option value="5">5.0</option>
+                        </select>
+                        <input type="submit" value="Rate Driver">
+                    </form>
+                </td>
+            </tr>
+            <tr>
+                <td>19/12/2019</td>
+                <td>3:19PM</td>
+                <td>Sengkang</td>
+                <td>Punggol</td>
+                <td>SGT1451L</td>
+                <td>$5.00</td>
+                <td>Jack Ma</td>
+                <td>
+                    <form action="/" id="ratingForm">
+                        <select name="rating" form="ratingForm">
+                            <option value="0">0.0</option>
+                            <option value="1">1.0</option>
+                            <option value="2">2.0</option>
+                            <option value="3">3.0</option>
+                            <option value="4">4.0</option>
+                            <option value="5">5.0</option>
+                        </select>
+                        <input type="submit" value="Rate Driver">
+                    </form>
+                </td>
+            </tr>
+            <tr>
+                <td>19/12/2019</td>
+                <td>3:19PM</td>
+                <td>Sengkang</td>
+                <td>Punggol</td>
+                <td>SGT1451L</td>
+                <td>$5.00</td>
+                <td>Jack Ma</td>
+                <td>
+                    <form action="/" id="ratingForm">
+                        <select name="rating" form="ratingForm">
+                            <option value="0">0.0</option>
+                            <option value="1">1.0</option>
+                            <option value="2">2.0</option>
+                            <option value="3">3.0</option>
+                            <option value="4">4.0</option>
+                            <option value="5">5.0</option>
+                        </select>
+                        <input type="submit" value="Rate Driver">
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <!-- FOR DRIVERS ONLY -->
+    <h2>Close Transactions</h2>
+    <h7>for drivers only. pls remove this line before deployment</h7>
+    <table class="table">
+        <thead class="thead-light">
+            <tr>
+                <th scope="col">Trip Date</th>
+                <th scope="col">Trip Time</th>
+                <th scope="col">Origin</th>
+                <th scope="col">Destination</th>
+                <th scope="col">Car Used</th>
+                <th scope="col">Total Earnings</th>
+                <th scope="col">Number of Passengers</th>
+                <th scope="col">Payment Type</th>
+                <th scope="col">Close Transaction</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>19/12/2019</td>
+                <td>3:19PM</td>
+                <td>Sengkang</td>
+                <td>Punggol</td>
+                <td>SGT1451L</td>
+                <td>$5.00</td>
+                <td>3</td>
+                <td>
+                    <form action="/" id="paymentForm">
+                        <select name="payment" form="paymentForm">
+                            <option value="0">Cash</option>
+                            <option value="1">Nets</option>
+                            <option value="2">Credit</option>
+                            <option value="3">Paywave</option>
+                            <option value="4">Master</option>
+                            <option value="5">Visa</option>
+                        </select>
+                        <input type="submit" value="Close transaction">
+                    </form>
+                </td>
+            </tr>
+            <tr>
+                <td>19/12/2019</td>
+                <td>3:19PM</td>
+                <td>Sengkang</td>
+                <td>Punggol</td>
+                <td>SGT1451L</td>
+                <td>$5.00</td>
+                <td>3</td>
+                <td>
+                    <form action="/" id="paymentForm">
+                        <select name="payment" form="paymentForm">
+                            <option value="0">Cash</option>
+                            <option value="1">Nets</option>
+                            <option value="2">Credit</option>
+                            <option value="3">Paywave</option>
+                            <option value="4">Master</option>
+                            <option value="5">Visa</option>
+                        </select>
+                        <input type="submit" value="Close transaction">
+                    </form>
+                </td>
+            </tr>
+            <tr>
+                <td>19/12/2019</td>
+                <td>3:19PM</td>
+                <td>Sengkang</td>
+                <td>Punggol</td>
+                <td>SGT1451L</td>
+                <td>$5.00</td>
+                <td>3</td>
+                <td>
+                    <form action="/" id="paymentForm">
+                        <select name="payment" form="paymentForm">
+                            <option value="0">Cash</option>
+                            <option value="1">Nets</option>
+                            <option value="2">Credit</option>
+                            <option value="3">Paywave</option>
+                            <option value="4">Master</option>
+                            <option value="5">Visa</option>
+                        </select>
+                        <input type="submit" value="Close transaction">
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>
