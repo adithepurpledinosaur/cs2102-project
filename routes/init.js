@@ -20,12 +20,22 @@ function initRouter(app) {
     app.get('/login', passport.antiMiddleware(), public_page('login'));
     app.post('/login', passport.authenticate('local', {
         successRedirect: '/dashboard',
-        failureRedirect: '/login?login=fail'
+        failureRedirect: '/login?msg=invalid%20login'
     }));
     app.get('/logout', passport.authMiddleware(), logout);
 
     app.get('/dashboard', passport.authMiddleware(), (req, res, next) => render(req, res, 'dashboard'));
     app.get('/updateprofile', passport.authMiddleware(), show_updateprofile);
+    app.post('/updateprofile', passport.authMiddleware(), do_updateprofile);
+}
+
+function do_updateprofile(req, res, next) {
+    pool.query(sql_query.query.update_userinfo, [req.user.username, req.body.fullname, req.body.gender, req.body.dob, req.body.address])
+        .then(() => res.redirect("/dashboard?msg=update%20success"))
+        .catch(err => {
+            console.log("Failed to update profile", err);
+            res.redirect("/updateprofile?msg=invalid");
+        });
 }
 
 function show_updateprofile(req, res, next) {
