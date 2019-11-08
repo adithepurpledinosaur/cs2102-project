@@ -1,16 +1,17 @@
-INSERT INTO Users VALUES ('Ali', 'password', 'Ali Bin Cob', 'Ali', 'M', '1990-10-10', 'Sengkang', DEFAULT);
-INSERT INTO Users VALUES ('Bob', 'password', 'Bob Bin Cob', 'Bob', 'M', '1991-10-10', 'Sengkang', DEFAULT);
-INSERT INTO Users VALUES ('Cob', 'password', 'Cob Bin Cob', 'Cob', 'M', '1992-10-10', 'Sengkang', DEFAULT);
-INSERT INTO Users VALUES ('Dad', 'password', 'Dad Bin Cob', 'Dad', 'M', '1993-10-10', 'Sengkang', DEFAULT);
-INSERT INTO Users VALUES ('Eli', 'password', 'Eli Bin Cob', 'Eli', 'M', '1994-10-10', 'Sengkang', DEFAULT);
-INSERT INTO Users VALUES ('Fox', 'password', 'Fox Bin Cob', 'Fox', 'F', '1995-10-10', 'Sengkang', DEFAULT);
-INSERT INTO Users VALUES ('God', 'password', 'God Bin Cob', 'God', 'M', '1996-10-10', 'Sengkang', DEFAULT);
-INSERT INTO Users VALUES ('Ham', 'password', 'Ham Bin Cob', 'Ham', 'M', '1997-10-10', 'Sengkang', DEFAULT);
-INSERT INTO Users VALUES ('Ivy', 'password', 'Ivy Bin Cob', 'Ivy', 'F', '1998-10-10', 'Sengkang', DEFAULT);
-INSERT INTO Users VALUES ('Jay', 'password', 'Jay Bin Cob', 'Jay', 'M', '1999-10-10', 'Sengkang', DEFAULT);
-INSERT INTO Users VALUES ('Kyl', 'password', 'Kyl Bin Cob', 'Kyl', 'M', '2000-10-10', 'Sengkang', DEFAULT);
-INSERT INTO Users VALUES ('Lam', 'password', 'Lam Bin Cob', 'Lam', 'M', '2001-10-10', 'Sengkang', DEFAULT);
-INSERT INTO Users VALUES ('Max', 'password', 'Max Bin Cob', 'Max', 'F', '2010-10-10', 'Sengkang', DEFAULT);
+-- the password is 'password'
+INSERT INTO Users VALUES ('Ali', '$2b$10$pmSW2VmR.fPKv7nUrA4Vq.uxpwgC.27Y4baSLHhnTZ8mVe5sayfEu', 'Ali Bin Cob', 'Ali', 'M', '1990-10-10', 'Sengkang', DEFAULT);
+INSERT INTO Users VALUES ('Bob', '$2b$10$pmSW2VmR.fPKv7nUrA4Vq.uxpwgC.27Y4baSLHhnTZ8mVe5sayfEu', 'Bob Bin Cob', 'Bob', 'M', '1991-10-10', 'Sengkang', DEFAULT);
+INSERT INTO Users VALUES ('Cob', '$2b$10$pmSW2VmR.fPKv7nUrA4Vq.uxpwgC.27Y4baSLHhnTZ8mVe5sayfEu', 'Cob Bin Cob', 'Cob', 'M', '1992-10-10', 'Sengkang', DEFAULT);
+INSERT INTO Users VALUES ('Dad', '$2b$10$pmSW2VmR.fPKv7nUrA4Vq.uxpwgC.27Y4baSLHhnTZ8mVe5sayfEu', 'Dad Bin Cob', 'Dad', 'M', '1993-10-10', 'Sengkang', DEFAULT);
+INSERT INTO Users VALUES ('Eli', '$2b$10$pmSW2VmR.fPKv7nUrA4Vq.uxpwgC.27Y4baSLHhnTZ8mVe5sayfEu', 'Eli Bin Cob', 'Eli', 'M', '1994-10-10', 'Sengkang', DEFAULT);
+INSERT INTO Users VALUES ('Fox', '$2b$10$pmSW2VmR.fPKv7nUrA4Vq.uxpwgC.27Y4baSLHhnTZ8mVe5sayfEu', 'Fox Bin Cob', 'Fox', 'F', '1995-10-10', 'Sengkang', DEFAULT);
+INSERT INTO Users VALUES ('God', '$2b$10$pmSW2VmR.fPKv7nUrA4Vq.uxpwgC.27Y4baSLHhnTZ8mVe5sayfEu', 'God Bin Cob', 'God', 'M', '1996-10-10', 'Sengkang', DEFAULT);
+INSERT INTO Users VALUES ('Ham', '$2b$10$pmSW2VmR.fPKv7nUrA4Vq.uxpwgC.27Y4baSLHhnTZ8mVe5sayfEu', 'Ham Bin Cob', 'Ham', 'M', '1997-10-10', 'Sengkang', DEFAULT);
+INSERT INTO Users VALUES ('Ivy', '$2b$10$pmSW2VmR.fPKv7nUrA4Vq.uxpwgC.27Y4baSLHhnTZ8mVe5sayfEu', 'Ivy Bin Cob', 'Ivy', 'F', '1998-10-10', 'Sengkang', DEFAULT);
+INSERT INTO Users VALUES ('Jay', '$2b$10$pmSW2VmR.fPKv7nUrA4Vq.uxpwgC.27Y4baSLHhnTZ8mVe5sayfEu', 'Jay Bin Cob', 'Jay', 'M', '1999-10-10', 'Sengkang', DEFAULT);
+INSERT INTO Users VALUES ('Kyl', '$2b$10$pmSW2VmR.fPKv7nUrA4Vq.uxpwgC.27Y4baSLHhnTZ8mVe5sayfEu', 'Kyl Bin Cob', 'Kyl', 'M', '2000-10-10', 'Sengkang', DEFAULT);
+INSERT INTO Users VALUES ('Lam', '$2b$10$pmSW2VmR.fPKv7nUrA4Vq.uxpwgC.27Y4baSLHhnTZ8mVe5sayfEu', 'Lam Bin Cob', 'Lam', 'M', '2001-10-10', 'Sengkang', DEFAULT);
+INSERT INTO Users VALUES ('Max', '$2b$10$pmSW2VmR.fPKv7nUrA4Vq.uxpwgC.27Y4baSLHhnTZ8mVe5sayfEu', 'Max Bin Cob', 'Max', 'F', '2010-10-10', 'Sengkang', DEFAULT);
 
 INSERT INTO Reward VALUES ('D000001', DEFAULT);
 INSERT INTO Reward VALUES ('D000002', DEFAULT);
@@ -59,6 +60,7 @@ INSERT INTO Car VALUES ('Dad', 5, 5, 'Lambo', '2016-10-08');
 INSERT INTO Ride VALUES ('Bob', 3, 5, 'Sengkang', 'Hougang', '12:00:00', '2019-11-08', DEFAULT, 3, DEFAULT);
 INSERT INTO Ride VALUES ('Bob', 3, 5, 'Sengkang', 'Hougang', '12:00:00', '2019-11-09', DEFAULT, 3, DEFAULT);
 INSERT INTO Ride VALUES ('Bob', 3, 5, 'Sengkang', 'Hougang', '13:00:00', '2019-11-09', DEFAULT, 3, DEFAULT);
+INSERT INTO Ride VALUES ('Bob', 3, 5, 'Sengkang', 'Hougang', '13:10:00', '2019-11-09', DEFAULT, 3, DEFAULT);
 INSERT INTO Ride VALUES ('Cob', 4, 5, 'Sengkang', 'Hougang', '13:00:00', '2019-11-09', DEFAULT, 3, DEFAULT);
 INSERT INTO Ride VALUES ('Cob', 4, 3, 'Sengkang', 'Hougang', '13:00:00', '2019-11-09', DEFAULT, 3, DEFAULT);
 INSERT INTO Ride VALUES ('Dad', 5, 5, 'Sengkang', 'Hougang', '13:00:00', '2019-11-09', DEFAULT, 3, DEFAULT);
@@ -70,6 +72,17 @@ INSERT INTO Bid VALUES ('God', 'Bob', 3, 'Sengkang', 'Hougang', '12:00:00', '201
 INSERT INTO Bid VALUES ('Dad', 'Dad', 5, 'Sengkang', 'Hougang', '13:00:00', '2019-11-09', DEFAULT, 3, DEFAULT);
 
 
-UPDATE BID SET price = 3
-    WHERE (puname = 'Dad' AND duname = 'Bob' AND plate_num = 3 AND origin = 'Sengkang' AND dest = 'Hougang' AND ptime = '12:00:00' AND pdate = '2019-11-09' AND price = 4);
+UPDATE BID SET price = 4
+    WHERE (puname = 'Dad' AND duname = 'Bob' AND plate_num = 3 AND origin = 'Sengkang' AND dest = 'Hougang' AND ptime = '12:00:00' AND pdate = '2019-11-09' AND price = 3);
 
+UPDATE BID SET won = TRUE
+WHERE (puname = 'Dad' AND duname = 'Bob' AND plate_num = 3 AND origin = 'Sengkang' AND dest = 'Hougang' AND ptime = '12:00:00' AND pdate = '2019-11-09' AND price = 4);
+
+--When driver closes transaction--
+UPDATE Transactions SET closed = true
+WHERE (puname = 'Dad' AND duname = 'Bob' AND plate_num = 3 AND origin = 'Sengkang' AND dest = 'Hougang' AND ptime = '12:00:00' AND pdate = '2019-11-09');
+--prompt user to input disc code and rating, and driver rating and ptype
+UPDATE Transactions SET prating = 1.5, drating = 2.5, ptype = 'Cash'
+WHERE (puname = 'Dad' AND duname = 'Bob' AND plate_num = 3 AND origin = 'Sengkang' AND dest = 'Hougang' AND ptime = '12:00:00' AND pdate = '2019-11-09');
+
+update Passenger set tpoints = 100, cpoints = 100 where uname = 'Dad';

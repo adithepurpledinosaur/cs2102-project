@@ -14,8 +14,8 @@ CREATE TABLE Users (
 	CHECK (cdate >= current_date),					/* Check if date is valid */
 	CHECK (date_part('year', age(dob)) >= 16),		/* Check if user is 16 y/o and above */
     CHECK (                                         /* Check gender */
-            UPPER(gender) = 'M'
-            OR UPPER(gender) = 'F'
+            gender = 'M'
+            OR gender = 'F'
           )   
 );
 
@@ -43,9 +43,9 @@ CREATE TABLE Passenger (
 	CHECK (tpoints >= 0),							/* Check if tpoints is valid */
 	CHECK (cpoints >= 0),							/* Check if cpoints is valid */ 
 	CHECK (											/* Check if mstatus is valid */
-			UPPER(mstatus) = 'MEMBER'
-			OR UPPER(mstatus) = 'PREMIUM'
-			OR UPPER(mstatus) = 'VIP'
+			mstatus = 'MEMBER'
+			OR mstatus = 'PREMIUM'
+			OR mstatus = 'VIP'
 		  )
 );
 
@@ -112,9 +112,9 @@ CREATE TABLE Reward (
 	rcode char(7) PRIMARY KEY,						/* Reward code (Eg. ABC0000) */
 	expired boolean DEFAULT false,					/* States if reward has expired */
 	CHECK (											/* D = Discount, P = Point */
-			UPPER(rcode) LIKE 'D%'
+			rcode LIKE 'D%'
 		   	OR
-			UPPER(rcode) LIKE 'R%'
+			rcode LIKE 'R%'
 		  )
 );
 
@@ -173,7 +173,7 @@ CREATE TABLE Bid (
 
 
 CREATE TABLE Transactions (
-	tcode varchar(15) PRIMARY KEY,
+	--tcode varchar(7) PRIMARY KEY,
 	puname varchar(15),
 	duname varchar(15),
 	plate_num integer,
@@ -181,21 +181,23 @@ CREATE TABLE Transactions (
 	dest varchar(20),
 	ptime time,
 	pdate date,
-	r_issue char(7),
+	--r_issue char(7),
 	r_redeem char (7) DEFAULT NULL,
+	oprice integer,									/* AMount received by Driver */
 	tprice integer,									/* Total price Passenger paid */
 	prating integer,								/* Rating given to passenger by driver */
 	drating integer,								/* Rating given to driver by passenger */
-	ptype varchar(7) NOT NULL,
+	ptype varchar(7),
 	closed boolean DEFAULT FALSE,
 	FOREIGN KEY (puname)
 		REFERENCES Passenger (uname),
-	FOREIGN KEY (r_issue)
-		REFERENCES Reward (rcode),
+	-- FOREIGN KEY (r_issue)
+	-- 	REFERENCES Reward (rcode),
 	FOREIGN KEY (r_redeem)
 		REFERENCES Reward (rcode),
 	FOREIGN KEY (duname, plate_num, origin, dest, ptime, pdate)
 		REFERENCES Ride (uname, plate_num, origin, dest, ptime, pdate),
+	PRIMARY KEY (puname, duname, plate_num, origin, dest, ptime, pdate),
 	CHECK (puname <> duname),						/* Make sures that the passenger */
 													/* and driver are not the same person */
 	CHECK (											/* Passenger ratings: Range of 0 to 5 inclusive */

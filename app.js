@@ -24,6 +24,11 @@ const app = express();
 app.use(bodyParser.urlencoded({extended: false}));
 
 require('./auth').init(app);
+app.use(session({
+    secret: 'purple dinosaur',
+    resave: true,
+    saveUninitialized: true,
+}));
 app.use(passport.initialize());
 app.use(passport.session());
 
