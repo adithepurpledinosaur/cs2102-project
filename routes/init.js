@@ -20,7 +20,7 @@ function initRouter(app) {
     app.get('/login', passport.antiMiddleware(), public_page('login'));
     app.post('/login', passport.authenticate('local', {
         successRedirect: '/dashboard',
-        failureRedirect: '/login?msg=invalid%20login'
+        failureRedirect: withMsg("/login", "invalid login"),
     }));
     app.get('/logout', passport.authMiddleware(), logout);
 
@@ -34,41 +34,27 @@ function initRouter(app) {
 
 function unlock_driver(req, res, next) {
     pool.query(sql_query.query.create_driver, [req.user.username])
-        .then(() => res.redirect("/dashboard?msg=driver%20features%20unlocked"))
-        .catch(err => res.redirect("/dashboard?msg=already%20a%20driver"));
+        .then(() => res.redirect(withMsg("/dashboard", "driver features unlocked")))
+        .catch(err => res.redirect(withMsg("/dashboard", "already a driver")));
 }
 function unlock_passenger(req, res, next) {
     pool.query(sql_query.query.create_passenger, [req.user.username])
-        .then(() => res.redirect("/dashboard?msg=passenger%20features%20unlocked"))
-        .catch(err => res.redirect("/dashboard?msg=already%20a%20passenger"));
+        .then(() => res.redirect(withMsg("/dashboard", "passenger features unlocked")))
+        .catch(err => res.redirect(withMsg("/dashboard", "already a passenger")));
 }
 
 function do_updateprofile(req, res, next) {
     pool.query(sql_query.query.update_userinfo, [req.user.username, req.body.fullname, req.body.gender, req.body.dob, req.body.address])
-        .then(() => res.redirect("/dashboard?msg=update%20success"))
+        .then(() => res.redirect(withMsg("/dashboard", "update success")))
         .catch(err => {
             console.log("Failed to update profile", err);
-            res.redirect("/updateprofile?msg=invalid");
+            res.redirect(withMsg("/updateprofile", "invalid input (if you're younger than 16 you shouldn't be here"))
         });
 }
 
 function show_updateprofile(req, res, next) {
     pool.query(sql_query.query.get_userinfo, [req.user.username])
         .then(data => render(req, res, 'updateprofile', {row : data.rows[0]}));
-}
-
-// renders a page behind the authwall, with username accessible in ejs and possibly other stuff
-function render(req, res, page, other) {
-    var info = {
-        page: page,
-        username: req.user.username,
-    };
-    if(other) {
-        for(var fld in other) {
-            info[fld] = other[fld];
-        }
-    }
-    return res.render(page, info);
 }
 
 function create_user(req, res, next) {
@@ -80,20 +66,43 @@ function create_user(req, res, next) {
         .then(() => res.redirect("/login"))
         .catch(err => {
             console.log("Error adding user", err);
-            res.redirect("/register?reg=fail");
+            res.redirect(withMsg("/register", "username taken"));
         })
 }
 
+// renders a page behind the authwall, with username accessible in ejs and possibly other stuff
+function render(req, res, page, other) {
+    var info = {
+        page: page,
+        username: req.user.username,
+    };
+    if (other) {
+        for(var fld in other) {
+            info[fld] = other[fld];
+        }
+    }
+    return render_wrap(req, res, page, info);
+}
 
 // renders a page that everyone can see, such pages require no authentication context
 function public_page(pageName) {
-    return (req, res, next) => res.render(pageName);
+    return (req, res, next) => render_wrap(req, res, pageName, {});
 }
 
 function logout(req, res, next) {
     req.session.destroy();
     req.logout();
     res.redirect('/');
+}
+
+// bolt on feedback using query strings (which is prone to xss and other fun stuff)
+function render_wrap(req, res, page, info) {
+    info['msg'] = req.query['msg'];
+    return res.render(page, info);
+}
+
+function withMsg(endpoint, msg) {
+    return endpoint + "?msg=" + encodeURI(msg);
 }
 
 module.exports = initRouter;
