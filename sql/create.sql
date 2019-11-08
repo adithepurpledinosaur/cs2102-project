@@ -96,7 +96,7 @@ CREATE TABLE Ride (
 CREATE TABLE Benefits (
 	bcode char(7) PRIMARY KEY,
 	bvalue integer NOT NULL,						/* Value of Benefit */	
-	CHECK (value > 0)								/* Check if amt is valid */							
+	CHECK (bvalue > 0)								/* Check if amt is valid */							
 
 );
  
@@ -114,7 +114,7 @@ CREATE TABLE Reward (
 	CHECK (											/* D = Discount, P = Point */
 			UPPER(rcode) LIKE 'D%'
 		   	OR
-			UPPER(rcode) LIKE 'P%'
+			UPPER(rcode) LIKE 'R%'
 		  )
 );
 
@@ -164,7 +164,7 @@ CREATE TABLE Bid (
 		REFERENCES Ride (uname, plate_num, origin, dest, ptime, pdate)
 		ON DELETE CASCADE,
 	PRIMARY KEY (puname, duname, plate_num, origin, dest, ptime, pdate),
-	CHECK (ptime > current_time + INTERVAL '1 hour'), /* Check that time passenger bids is 1hr before ride */
+	CHECK ((pdate = current_date AND ptime > current_time + INTERVAL '1 hour') OR pdate > current_date), /* Check that time passenger bids is 1hr before ride */
 	CHECK (puname <> duname),						/* Make sures that the passenger and driver are not the same person */
 	CHECK (price > 0)								/* Checks if the price is valid */
 );

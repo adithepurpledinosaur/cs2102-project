@@ -12,10 +12,33 @@ INSERT INTO Users VALUES ('Kyl', 'password', 'Kyl Bin Cob', 'Kyl', 'M', '2000-10
 INSERT INTO Users VALUES ('Lam', 'password', 'Lam Bin Cob', 'Lam', 'M', '2001-10-10', 'Sengkang', DEFAULT);
 INSERT INTO Users VALUES ('Max', 'password', 'Max Bin Cob', 'Max', 'F', '2010-10-10', 'Sengkang', DEFAULT);
 
-INSERT INTO Driver VALUES ('ALi', 2, DEFAULT);
-INSERT INTO Driver VALUES ('Bob', 2, DEFAULT);
-INSERT INTO Driver VALUES ('Cob', 2, DEFAULT);
-INSERT INTO Driver VALUES ('Dad', 2, DEFAULT);
+INSERT INTO Reward VALUES ('D000001', DEFAULT);
+INSERT INTO Reward VALUES ('D000002', DEFAULT);
+INSERT INTO Reward VALUES ('D000003', DEFAULT);
+INSERT INTO Reward VALUES ('D000004', DEFAULT);
+INSERT INTO Reward VALUES ('D000005', DEFAULT);
+INSERT INTO Reward VALUES ('D000006', DEFAULT);
+INSERT INTO Reward VALUES ('R000001', DEFAULT);
+INSERT INTO Reward VALUES ('R000002', DEFAULT);
+
+
+INSERT INTO Discount VALUES ('D000001', 20, 1);
+INSERT INTO Discount VALUES ('D000002', 40, 2);
+INSERT INTO Discount VALUES ('D000003', 60, 3);
+INSERT INTO Discount VALUES ('D000004', 80, 4);
+INSERT INTO Discount VALUES ('D000005', 100, 5);
+INSERT INTO Discount VALUES ('D000006', 120, 8);
+
+INSERT INTO Points VALUES ('R000001', 50);
+INSERT INTO Points VALUES ('R000002', 5);
+
+INSERT INTO Benefits VALUES ('B000001', 1);
+
+
+INSERT INTO Driver VALUES ('ALi', DEFAULT);
+INSERT INTO Driver VALUES ('Bob', DEFAULT);
+INSERT INTO Driver VALUES ('Cob', DEFAULT);
+INSERT INTO Driver VALUES ('Dad', DEFAULT);
 
 INSERT INTO Passenger VALUES ('Dad', DEFAULT, DEFAULT, DEFAULT, DEFAULT);
 INSERT INTO Passenger VALUES ('Eli', DEFAULT, DEFAULT, DEFAULT, DEFAULT);
@@ -40,25 +63,13 @@ INSERT INTO Ride VALUES ('Cob', 4, 5, 'Sengkang', 'Hougang', '13:00:00', '2019-1
 INSERT INTO Ride VALUES ('Cob', 4, 3, 'Sengkang', 'Hougang', '13:00:00', '2019-11-09', DEFAULT, 3, DEFAULT);
 INSERT INTO Ride VALUES ('Dad', 5, 5, 'Sengkang', 'Hougang', '13:00:00', '2019-11-09', DEFAULT, 3, DEFAULT);
 
-INSERT INTO Reward ('D000001', DEFAULT);
-INSERT INTO Reward ('D000002', DEFAULT);
-INSERT INTO Reward ('D000003', DEFAULT);
-INSERT INTO Reward ('D000004', DEFAULT);
-INSERT INTO Reward ('D000005', DEFAULT);
-INSERT INTO Reward ('D000006', DEFAULT);
-INSERT INTO Reward ('R000001', DEFAULT);
-INSERT INTO Reward ('R000002', DEFAULT);
+INSERT INTO Bid VALUES ('Dad', 'Bob', 3, 'Sengkang', 'Hougang', '12:00:00', '2019-11-09', DEFAULT, 3, DEFAULT);
+INSERT INTO Bid VALUES ('Eli', 'Bob', 3, 'Sengkang', 'Hougang', '12:00:00', '2019-11-09', DEFAULT, 2, DEFAULT);
+INSERT INTO Bid VALUES ('Fox', 'Bob', 3, 'Sengkang', 'Hougang', '12:00:00', '2019-11-09', DEFAULT, 3, DEFAULT);
+INSERT INTO Bid VALUES ('God', 'Bob', 3, 'Sengkang', 'Hougang', '12:00:00', '2019-11-09', DEFAULT, 3, DEFAULT);
+INSERT INTO Bid VALUES ('Dad', 'Dad', 5, 'Sengkang', 'Hougang', '13:00:00', '2019-11-09', DEFAULT, 3, DEFAULT);
 
 
-INSERT INTO Discount ('D000001', 20, 1);
-INSERT INTO Discount ('D000002', 40, 2);
-INSERT INTO Discount ('D000003', 60, 3);
-INSERT INTO Discount ('D000004', 80, 4);
-INSERT INTO Discount ('D000005', 100, 5);
-INSERT INTO Discount ('D000006', 120, 8);
+UPDATE BID SET price = 3
+    WHERE (puname = 'Dad' AND duname = 'Bob' AND plate_num = 3 AND origin = 'Sengkang' AND dest = 'Hougang' AND ptime = '12:00:00' AND pdate = '2019-11-09' AND price = 4);
 
-INSERT INTO Points ('R000001', 50);
-INSERT INTO Points ('R000002', 10);
-
-INSERT INTO Benefits('B000001', 1);
---insert earns 

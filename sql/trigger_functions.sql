@@ -55,9 +55,9 @@ CREATE OR REPLACE FUNCTION update_pax()
 RETURNS TRIGGER AS 
 $$ DECLARE newuname1 varchar(15);
 BEGIN 
-	RAISE NOTICE 'Bid added';
 	newuname1 := NEW.duname;                                         
 	UPDATE Ride SET curr_bids = curr_bids + 1 WHERE uname = newuname1;
+	RAISE NOTICE 'Bid curr pax updated';
 	RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -132,7 +132,7 @@ EXECUTE PROCEDURE remove_ride();
 	DROP FUNCTION check_bid() CASCADE;
 	CREATE OR REPLACE FUNCTION check_bid()
 	RETURNS TRIGGER AS 
-	$$ DECLARE mincost integer
+	$$ DECLARE mincost integer;
 	BEGIN 
 		SELECT min_cost INTO mincost
 		FROM Ride R WHERE
@@ -144,12 +144,12 @@ EXECUTE PROCEDURE remove_ride();
 		AND NEW.pdate = R.pdate;
 		
 		IF NEW.price < mincost THEN
-			RAISE NOTICE 'Bid too low!'
+			RAISE NOTICE 'Bid too low!';
 			RETURN NULL;
 		ELSE 
-			RAISE NOTICE 'Checked Bid Price'
+			RAISE NOTICE 'Checked Bid Price';
 			RETURN NEW;
-			
+		END IF;	
 	END;
 	$$ LANGUAGE plpgsql;
 
@@ -159,27 +159,36 @@ EXECUTE PROCEDURE remove_ride();
 	EXECUTE PROCEDURE check_bid();
 
 ----Trigger to update btime on update on Bid----
+
 DROP FUNCTION update_btime() CASCADE;
 CREATE OR REPLACE FUNCTION update_btime()
 RETURNS TRIGGER AS 
-$$
-BEGIN 
-	IF NEW.uname = OLD.uname
-	AND NEW.duname = OLD.duname
-	AND NEW.plate_num = OLD.plate_num
-	AND NEW.origin = OLD.origin
-	AND NEW.dest = OLD.dest
-	AND NEW.ptime = OLD.ptime
-	AND NEW.pdate = OLD.pdate
-	AND NEW.price <> OLD.price THEN 
-		UPDATE Bid SET NEW.btime = current_time;
-	RETURN NEW;
-	END IF;
+$$ DECLARE	
+	newpuname varchar(15);
+	newduname varchar(15);
+	newplatenum integer;
+	neworigin  varchar(20);
+	newdest varchar(20);
+	newptime time;
+	newpdate date;
+	newprice integer;
+BEGIN  
+
+		UPDATE Bid SET btime = current_time WHERE
+		puname = NEW.puname
+		AND duname = NEW.duname
+		AND plate_num = NEW.plate_num
+		AND origin = NEW.origin
+		AND dest = NEW.dest
+		AND ptime = NEW.ptime
+		AND pdate = NEW.pdate;
+		RAISE NOTICE 'btime updated';
+		RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER price_update
-AFTER UPDATE ON Bid
+AFTER UPDATE of price ON Bid
 FOR EACH ROW 
 EXECUTE PROCEDURE update_btime();
 
@@ -206,22 +215,35 @@ FOR EACH ROW WHEN (NEW.closed = TRUE)
 EXECUTE PROCEDURE update_dtime();
 
 --Trigger to add to tpoints, every 5 dollars = 10 points--
-DROP FUNCTION update_tpoints() CASCADE;
-CREATE OR REPLACE FUNCTION update_tpoints()
-RETURNS TRIGGER AS 
-$$ 
-BEGIN  
-	UPDATE Passenger P 
-	SET P.tpoints = P.tpoints + ((NEW.tprice - (mod(NEW.tprice,5)))/5) * 10  
-	WHERE NEW.puname = P.uname;
-	RETURN NEW;
+DROP FUNCTION issue_points() CASCADE;
+CREATE OR REPLACE FUNCTION issue_points()
+RETURNS TRIGGER AS
+$$ DECLARE price integer;
+BEGIN
+	
+	SET NEW.tprice TO price; 
+	WHILE price >= 5 LOOP
+		INSERT INTO Obtains VALUES (NEW.puname, 'R000002', DEFAULT, DEFAULT);
+		price := price - 5;
+
+		UPDATE Passenger P SET P.tpoints = P.tpoints + 5 
+		WHERE P.uname = NEW.puname;
+	END LOOP;
+	RETURN NULL;
+
+	-- UPDATE Passenger P 
+	-- SET P.tpoints = P.tpoints + ((NEW.tprice - (mod(NEW.tprice,5)))/5) * 10  
+	-- WHERE NEW.puname = P.uname;
+	-- RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER issue_points
+CREATE TRIGGER p_ride
 AFTER UPDATE ON Transactions 
 FOR EACH ROW 
-EXECUTE PROCEDURE update_tpoints();
+EXECUTE PROCEDURE issue_points();
+
+
 
 --Trigger to check redeem status
 DROP FUNCTION check_redeem() CASCADE;
@@ -230,7 +252,12 @@ RETURNS TRIGGER AS
 $$ DECLARE 
 	redeem_status BOOLEAN;
 	exp_date timestamp;
+	disc_cost integer;
 BEGIN  
+
+	SELECT D.cost INTO disc_cost
+	FROM Discount D
+	WHERE D.rcode = NEW.r_redeem;
 
 	SELECT O.expdate INTO exp_date
 	FROM Obtains O 
@@ -246,6 +273,8 @@ BEGIN
 	OR exp_date >= CURRENT_TIMESTAMP THEN
 		RETURN NULL;
 	ELSE	
+		UPDATE Passenger P SET P.cpoints = P.cpoints - disc_cost 
+		WHERE P.uname = NEW.puname;
 		RETURN NEW;
 	END IF;
 
@@ -350,11 +379,11 @@ CREATE OR REPLACE FUNCTION issue_benefit()
 RETURNS TRIGGER AS 
 $$ DECLARE 
 BEGIN  
-	INSERT INTO Earns VALUES (NEW.duname, 'B000001', DEFAULT)
+	INSERT INTO Earns VALUES (NEW.duname, 'B000001', DEFAULT);
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER ride_finished
+CREATE TRIGGER d_ride
 AFTER UPDATE ON Transactions 
 FOR EACH ROW WHEN (NEW.closed = TRUE)
 EXECUTE PROCEDURE issue_benefit();

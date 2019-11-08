@@ -14,3 +14,5 @@ FROM Reward R, AltDiscount D, Passenger P
 WHERE r.cost <= P.cpoints 
     AND P.uname = 'God'
     AND R.rcode = D.rcode;
+
+--check total points have by summing all rewards
