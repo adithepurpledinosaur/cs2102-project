@@ -23,7 +23,11 @@ CREATE TABLE Driver (
 	uname varchar(15) PRIMARY KEY REFERENCES Users
 		ON DELETE CASCADE,
 	expr integer NOT NULL, 							/* Experience */
-	rating numeric (1,2) DEFAULT 5.00,				/* Default Driver rating */
+	rating numeric (3,2) DEFAULT 5.00,				/* Default Driver rating */
+	CHECK (											/* Ratings: Range of 0 to 5 inclusive */
+		rating <= 5
+	   	AND rating >= 0
+		),
 	CHECK (expr >= 0)								/* Check if experience is valid */
 );
 
@@ -31,9 +35,13 @@ CREATE TABLE Passenger (
 	uname varchar(15) PRIMARY KEY REFERENCES Users
 		ON DELETE CASCADE,
 	mstatus varchar(10) DEFAULT 'Member',			/* Membership status */
-	tpoints integer DEFAULT 100,					/* Total accumalated reward points (upon joining: all members enjoy 100 points free) */
-    cpoints integer DEFAULT 100,                    /* Current points user has after using points for Discount */
-	rating numeric (1,2) DEFAULT 5.00,				/* Default Passenger rating */
+	tpoints integer DEFAULT 0,					/* Total accumalated reward points (upon joining: all members enjoy 100 points free) */
+    cpoints integer DEFAULT 0,                    /* Current points user has after using points for Discount */
+	rating numeric (3,2) DEFAULT 5.00,				/* Default Passenger rating */
+	CHECK (											/* Ratings: Range of 0 to 5 inclusive */
+		rating <= 5
+	   	AND rating >= 0
+		),
 	CHECK (tpoints >= 0),							/* Check if tpoints is valid */
 	CHECK (cpoints >= 0),							/* Check if cpoints is valid */ 
 	CHECK (											/* Check if mstatus is valid */
@@ -48,16 +56,16 @@ CREATE TABLE Passenger (
 CREATE TABLE Car (
 	uname varchar(15) REFERENCES Driver
 		ON DELETE CASCADE,
-	plate_no integer NOT NULL,						/* Plate number: Assuming all integers (eg. 1234, 1111, 0000) */
-	num_seats integer DEFAULT 4,					/* Maximum capacity of the car */
+	plate_num integer UNIQUE,				/* Plate number: Assuming all integers (eg. 1234, 1111, 0000) */
+	num_seats integer,			 					/* Maximum capacity of the car, excluding driver */
 	model varchar(7) NOT NULL,
 	edate date NOT NULL,							/* End date of COE */
 	PRIMARY KEY (uname, plate_num),
-	CHECK (mcap > 0),								/* Check if the mcap is valid */
+	CHECK (num_seats > 0),							/* Check if the mcap is valid */
 	CHECK (											/* Check if the COE expiry: */
 			date_part(								/* Minimum 1 year before expiry to register */
 						'day',
-					 	(edate::timestamp - now()::timestamp)
+					 	(now()::timestamp - edate::timestamp)
 					 )
 			>= 365
 		  )
@@ -66,12 +74,12 @@ CREATE TABLE Car (
 CREATE TABLE Ride (
 	uname varchar(15),
 	plate_num integer,
-	pmax integer,									/* Maximum passenger capacity */
+	pmax integer,									/* Maximum passengers driver accepts*/
 	origin varchar(20),								/* Place to pick passenger up */
 	dest varchar(20),								/* Destination: Place to drop passenger off */
 	ptime time,										/* Pick-up time */
 	pdate date,										/* Pick-up date */
-	dtime time,										/* Drop-off time */
+	dtime time DEFAULT NULL,						/* Drop-off time */
 	curr_bids integer DEFAULT 0,					/* Current number of bidders */
 	FOREIGN KEY (uname, plate_num) REFERENCES Car
 		ON DELETE CASCADE,
@@ -128,21 +136,21 @@ CREATE TABLE Obtains (								/* Passenger has... */
 CREATE TABLE Bid (
 	puname varchar(15),
 	duname varchar(15),
-	plate_no integer,
+	plate_num integer,
 	origin varchar(20),
 	dest varchar(20),
 	ptime time,
 	pdate date,	
 	won boolean DEFAULT FALSE,						/* States if the passenger has won the bid */
 	price integer NOT NULL,							/* Price of the bid */
-	btime time current_time,						/* Time of bid, updates when User updates Bid to change the bid price */
+	btime time DEFAULT current_time,				/* Time of bid, updates when User updates Bid to change the bid price */
 	FOREIGN KEY (puname)
 		REFERENCES Passenger (uname)
 		ON DELETE CASCADE,
-	FOREIGN KEY (duname, plate_no, origin, dest, ptime, pdate)
-		REFERENCES Ride (uname, plate_no, origin, dest, ptime, pdate)
+	FOREIGN KEY (duname, plate_num, origin, dest, ptime, pdate)
+		REFERENCES Ride (uname, plate_num, origin, dest, ptime, pdate)
 		ON DELETE CASCADE,
-	PRIMARY KEY (puname, duname, plate_no, origin, dest, ptime, pdate),
+	PRIMARY KEY (puname, duname, plate_num, origin, dest, ptime, pdate),
 	CHECK (ptime > current_time + INTERVAL '1 hour'), /* Check that time passenger bids is 1hr before ride */
 	CHECK (puname <> duname),						/* Make sures that the passenger and driver are not the same person */
 	CHECK (price > 0)								/* Checks if the price is valid */
@@ -187,7 +195,7 @@ CREATE TABLE Transactions (
 );
 
 CREATE TABLE Payment (
-	tcode varchar(15) REFERENCES Transactions		/* tcode */
+	tcode varchar(15) REFERENCES Transactions,		/* tcode */
 	ptype varchar(10) NOT NULL,						/* Payment Type */
 	CHECK (											
 			UPPER(ptype) = 'CARD'
