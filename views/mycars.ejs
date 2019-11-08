@@ -1,21 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <!-- Page Title -->
-    <title>Manage Cars</title>
-    <% include partial/navbar.ejs %>
-    <br>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-    
-    <!-- CSS for Styling -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
-    
-    <!-- JavaScript for Interactivity -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+    <title>My Cars</title>
+    <% include partial/header.ejs %>
 </head>
 <body>
+    <% include partial/navbar.ejs %>
 
 <script>
     function getCarPlate(rowNum) {
@@ -23,7 +13,7 @@
     }
 </script>
 
-    <h1><%= title %></h1>
+    <h1>My cars</h1>
     <table class="table">
         <thead class="thead-light">
             <tr>
@@ -95,11 +85,22 @@
         </tbody>
     </table>
     
-    <h2>Add Car</h2>
-    <form action="/">
-        Plate No <input type="text" name="Plate No"><br>
-        Model <input type="text" name="Model"><br>
-        COE Expiry <input type="date" name="COE Expiry"><br>
+    <h2>Add a car</h2>
+    <form action="/addcar" role="form" method="post">
+        <div class="form-group">
+            <label>Plate number <input type="text" class="form-control" name="plate_num" placeholder="SBC1234Z"></label>
+        </div>
+        <div class="form-group">
+            <label>Model <input type="text" class="form-control" name="model" placeholder="Honda Prius"></label>
+        </div>
+        <div class="form-group">
+            <label>COE Expiry (1 year of remaining validity needed)
+                <input type="date" class="form-control" name="edate"></label>
+        </div>
+        <div class="form-group">
+            <label>How many seats?
+                <input type="number" min="1" max="100" class="form-control" name="num_seats"></label>
+        </div>
         <input type="submit" value="Add Car">
     </form>
 </body>
