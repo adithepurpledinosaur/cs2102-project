@@ -15,6 +15,8 @@
 </head>
 <body>
     <h1><%= title %></h1>
+    <br>
+    <h2>Available Trips</h2>
     <table class="table">
         <thead class="thead-light">
             <tr>
@@ -45,39 +47,73 @@
                         </form>
                     </td>
                 </tr>
-            % } %> -->
-            <tr>
-                <td>John Smith</td>
-                <td>Sengkang</td>
-                <td>Punggol</td>
-                <td>$5.00</td>
-                <td>2 Seats</td>
-                <td>5 Bidders</td>
-                <td>
-                    <form action="/">
-                        <input type="text" name="bidAmount"><input type="submit" value="Place Bid">
-                    </form>
-                </td>
-            </tr>
-            <tr>
-                <td>John Smith</td>
-                <td>Sengkang</td>
-                <td>Punggol</td>
-                <td>$5.00</td>
-                <td>2 Seats</td>
-                <td>5 Bidders</td>
-                <td><form action="/"><input type="text" name="bidAmount"><input type="submit" value="Place Bid"></form></td>
-            </tr>
-            <tr>
-                <td>John Smith</td>
-                <td>Sengkang</td>
-                <td>Punggol</td>
-                <td>$5.00</td>
-                <td>2 Seats</td>
-                <td>5 Bidders</td>
-                <td><form action="/"><input type="text" name="bidAmount"><input type="submit" value="Place Bid"></form></td>
-            </tr>
-        </tbody>
-    </table>
-</body>
-</html>
+                % } %> -->
+                <tr>
+                    <td>John Smith</td>
+                    <td>Sengkang</td>
+                    <td>Punggol</td>
+                    <td>$5.00</td>
+                    <td>2 Seats</td>
+                    <td>5 Bidders</td>
+                    <td>
+                        <form action="/">
+                            <input type="text" name="bidAmount"><input type="submit" value="Place Bid">
+                        </form>
+                    </td>
+                </tr>
+                <tr>
+                    <td>John Smith</td>
+                    <td>Sengkang</td>
+                    <td>Punggol</td>
+                    <td>$5.00</td>
+                    <td>2 Seats</td>
+                    <td>5 Bidders</td>
+                    <td><form action="/"><input type="text" name="bidAmount"><input type="submit" value="Place Bid"></form></td>
+                </tr>
+                <tr>
+                    <td>John Smith</td>
+                    <td>Sengkang</td>
+                    <td>Punggol</td>
+                    <td>$5.00</td>
+                    <td>2 Seats</td>
+                    <td>5 Bidders</td>
+                    <td><form action="/"><input type="text" name="bidAmount"><input type="submit" value="Place Bid"></form></td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <h2>Advertise New Trip</h2>
+        <form action="/">
+            <table>
+                <thead>
+                    <tr>
+                        <td>Origin</td>
+                        <td>Destination</td>
+                        <td>Car</td>
+                        <td>Min Bid</td>
+                        <td>Number of Seats</td>
+                        <td>Submit</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <td><input type="text" name="Destination"></td>
+                    <td><input type="text" name="Destination"></td>
+                    <td>
+                        <select name="payment" form="paymentForm">
+                            <option value="0">SGT1451L</option>
+                            <option value="1">Car2</option>
+                            <option value="2">Car3</option>
+                            <option value="3">Car4</option>
+                            <option value="4">Car5</option>
+                            <option value="5">Car6</option>
+                        </select>
+                    </td>
+                    <td><input type="number" name="MinBid"></td>
+                    <td><input type="number" name="NumSeats"></td>
+                    <td><input type="submit" value="Add Car"></td>
+                </tbody>
+            </table>
+        </form>
+        
+    </body>
+    </html>
