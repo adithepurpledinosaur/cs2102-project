@@ -210,19 +210,20 @@ CREATE OR REPLACE FUNCTION update_dtime()
 RETURNS TRIGGER AS 
 $$ 
 BEGIN  
-	UPDATE Ride R SET R.dtime = current_time 
-	WHERE NEW.duname = R.uname 
-	AND NEW.plate_num = R.plate_num
-	AND NEW.origin = R.origin
-	AND NEW.dest = R.dest
-	AND NEW.ptime = R.ptime
-	AND NEW.pdate = R.pdate;
+	UPDATE Ride SET dtime = current_time 
+	WHERE uname = NEW.duname  
+	AND plate_num = NEW.plate_num
+	AND origin = NEW.origin
+	AND dest = NEW.dest
+	AND ptime = NEW.ptime
+	AND pdate = NEW.pdate;
+	RAISE NOTICE 'Drop time updated';
 	RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER trip_closed
-BEFORE UPDATE ON Transactions 
+AFTER UPDATE ON Transactions 
 FOR EACH ROW WHEN (NEW.closed = TRUE)
 EXECUTE PROCEDURE update_dtime();
 
@@ -244,6 +245,7 @@ BEGIN
 		UPDATE Passenger P SET P.cpoints = P.cpoints + 5 
 		WHERE P.uname = NEW.puname;
 	END LOOP; 
+	RAISE NOTICE 'Points for ride issued';
 	RETURN NULL;
 
 	-- UPDATE Passenger P 
@@ -286,10 +288,12 @@ BEGIN
 	
 	IF redeem_status = TRUE
 	OR exp_date >= CURRENT_TIMESTAMP THEN
+		RAISE NOTICE 'Expired discount';
 		RETURN NULL;
 	ELSE	
-		UPDATE Passenger P SET P.cpoints = P.cpoints - disc_cost 
-		WHERE P.uname = NEW.puname;
+		UPDATE Passenger SET cpoints = cpoints - disc_cost 
+		WHERE uname = NEW.puname;
+		RAISE NOTICE 'Discount Redeemed';
 		RETURN NEW;
 	END IF;
 
@@ -297,7 +301,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER user_redeem
-BEFORE INSERT ON Transactions 
+BEFORE UPDATE OF r_redeem ON Transactions 
 FOR EACH ROW 
 EXECUTE PROCEDURE check_redeem();
 ----------------------------------------
@@ -318,23 +322,31 @@ BEGIN
 	FROM Discount D  
 	WHERE NEW.r_redeem = D.rcode;
 	
-	UPDATE Obtains O
-	SET O.redeemed = TRUE 
-	WHERE NEW.puname = O.uname
-	AND NEW.r_redeem = O.rcode;
+	UPDATE Obtains
+	SET redeemed = TRUE 
+	WHERE uname = NEW.puname 
+	AND rcode = NEW.r_redeem;
 
-	UPDATE Transactions T 
-	SET T.tprice = T.tprice - disc;
+	UPDATE Transactions 
+	SET tprice = tprice - disc
+	WHERE puname = NEW.puname
+	AND duname = NEW.duname  
+	AND plate_num = NEW.plate_num
+	AND origin = NEW.origin
+	AND dest = NEW.dest
+	AND ptime = NEW.ptime
+	AND pdate = NEW.pdate;
 
 	UPDATE Passenger P
 	SET P.cpoints = P.cpoints - dcost;
+	RAISE NOTICE 'Discount applied';
 
 	RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER dicount_used
-AFTER INSERT ON Transactions 
+AFTER UPDATE OF r_redeem ON Transactions 
 FOR EACH ROW
 EXECUTE PROCEDURE update_price();
 
@@ -353,12 +365,13 @@ BEGIN
 	UPDATE Passenger P
 	SET P.rating = newrating 
 	WHERE NEW.puname = P.uname;
+	RAISE NOTICE 'New average prating';
 	RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER prating_added
-AFTER INSERT ON Transactions 
+AFTER UPDATE OF prating ON Transactions 
 FOR EACH ROW WHEN (NEW.prating <> NULL)
 EXECUTE PROCEDURE update_prating();
 
@@ -378,12 +391,13 @@ BEGIN
 	UPDATE Driver D
 	SET D.rating = newrating 
 	WHERE NEW.duname = D.uname;
+	RAISE NOTICE 'New average drating';
 	RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER drating_added
-AFTER INSERT ON Transactions 
+AFTER UPDATE OF drating ON Transactions 
 FOR EACH ROW WHEN (NEW.drating <> NULL)
 EXECUTE PROCEDURE update_drating();
 
@@ -395,6 +409,8 @@ RETURNS TRIGGER AS
 $$
 BEGIN  
 	INSERT INTO Earns VALUES (NEW.duname, 'B000001', DEFAULT);
+	RAISE NOTICE 'Driver earn benefit';
+	RETURN NULL;
 END;
 $$ LANGUAGE plpgsql;
 

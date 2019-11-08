@@ -59,6 +59,7 @@ INSERT INTO Car VALUES ('Dad', 5, 5, 'Lambo', '2016-10-08');
 INSERT INTO Ride VALUES ('Bob', 3, 5, 'Sengkang', 'Hougang', '12:00:00', '2019-11-08', DEFAULT, 3, DEFAULT);
 INSERT INTO Ride VALUES ('Bob', 3, 5, 'Sengkang', 'Hougang', '12:00:00', '2019-11-09', DEFAULT, 3, DEFAULT);
 INSERT INTO Ride VALUES ('Bob', 3, 5, 'Sengkang', 'Hougang', '13:00:00', '2019-11-09', DEFAULT, 3, DEFAULT);
+INSERT INTO Ride VALUES ('Bob', 3, 5, 'Sengkang', 'Hougang', '13:10:00', '2019-11-09', DEFAULT, 3, DEFAULT);
 INSERT INTO Ride VALUES ('Cob', 4, 5, 'Sengkang', 'Hougang', '13:00:00', '2019-11-09', DEFAULT, 3, DEFAULT);
 INSERT INTO Ride VALUES ('Cob', 4, 3, 'Sengkang', 'Hougang', '13:00:00', '2019-11-09', DEFAULT, 3, DEFAULT);
 INSERT INTO Ride VALUES ('Dad', 5, 5, 'Sengkang', 'Hougang', '13:00:00', '2019-11-09', DEFAULT, 3, DEFAULT);
@@ -70,15 +71,17 @@ INSERT INTO Bid VALUES ('God', 'Bob', 3, 'Sengkang', 'Hougang', '12:00:00', '201
 INSERT INTO Bid VALUES ('Dad', 'Dad', 5, 'Sengkang', 'Hougang', '13:00:00', '2019-11-09', DEFAULT, 3, DEFAULT);
 
 
-UPDATE BID SET price = 3
+UPDATE BID SET price = 4
     WHERE (puname = 'Dad' AND duname = 'Bob' AND plate_num = 3 AND origin = 'Sengkang' AND dest = 'Hougang' AND ptime = '12:00:00' AND pdate = '2019-11-09' AND price = 3);
 
-UPDATE BID SET won = TRUE 
-WHERE (puname = 'Dad' AND duname = 'Bob' AND plate_num = 3 AND origin = 'Sengkang' AND dest = 'Hougang' AND ptime = '12:00:00' AND pdate = '2019-11-09' AND price = 3);
+UPDATE BID SET won = TRUE
+WHERE (puname = 'Dad' AND duname = 'Bob' AND plate_num = 3 AND origin = 'Sengkang' AND dest = 'Hougang' AND ptime = '12:00:00' AND pdate = '2019-11-09' AND price = 4);
 
 --When driver closes transaction--
 UPDATE Transactions SET closed = true
 WHERE (puname = 'Dad' AND duname = 'Bob' AND plate_num = 3 AND origin = 'Sengkang' AND dest = 'Hougang' AND ptime = '12:00:00' AND pdate = '2019-11-09');
 --prompt user to input disc code and rating, and driver rating and ptype
-UPDATE Transactions SET r_
+UPDATE Transactions SET prating = 1.5, drating = 2.5, ptype = 'Cash'
 WHERE (puname = 'Dad' AND duname = 'Bob' AND plate_num = 3 AND origin = 'Sengkang' AND dest = 'Hougang' AND ptime = '12:00:00' AND pdate = '2019-11-09');
+
+update Passenger set tpoints = 100, cpoints = 100 where uname = 'Dad';
