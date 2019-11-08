@@ -25,6 +25,12 @@ function initRouter(app) {
     app.get('/logout', passport.authMiddleware(), logout);
 
     app.get('/dashboard', passport.authMiddleware(), (req, res, next) => render(req, res, 'dashboard'));
+    app.get('/updateprofile', passport.authMiddleware(), show_updateprofile);
+}
+
+function show_updateprofile(req, res, next) {
+    pool.query(sql_query.query.get_userinfo, [req.user.username])
+        .then(data => render(req, res, 'updateprofile', {row : data.rows[0]}));
 }
 
 // renders a page behind the authwall, with username accessible in ejs and possibly other stuff
@@ -38,7 +44,7 @@ function render(req, res, page, other) {
             info[fld] = other[fld];
         }
     }
-    res.render(page, info);
+    return res.render(page, info);
 }
 
 function create_user(req, res, next) {
