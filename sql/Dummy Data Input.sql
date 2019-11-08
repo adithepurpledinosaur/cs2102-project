@@ -1,0 +1,64 @@
+INSERT INTO Users VALUES ('Ali', 'password', 'Ali Bin Cob', 'Ali', 'M', '1990-10-10', 'Sengkang', DEFAULT);
+INSERT INTO Users VALUES ('Bob', 'password', 'Bob Bin Cob', 'Bob', 'M', '1991-10-10', 'Sengkang', DEFAULT);
+INSERT INTO Users VALUES ('Cob', 'password', 'Cob Bin Cob', 'Cob', 'M', '1992-10-10', 'Sengkang', DEFAULT);
+INSERT INTO Users VALUES ('Dad', 'password', 'Dad Bin Cob', 'Dad', 'M', '1993-10-10', 'Sengkang', DEFAULT);
+INSERT INTO Users VALUES ('Eli', 'password', 'Eli Bin Cob', 'Eli', 'M', '1994-10-10', 'Sengkang', DEFAULT);
+INSERT INTO Users VALUES ('Fox', 'password', 'Fox Bin Cob', 'Fox', 'F', '1995-10-10', 'Sengkang', DEFAULT);
+INSERT INTO Users VALUES ('God', 'password', 'God Bin Cob', 'God', 'M', '1996-10-10', 'Sengkang', DEFAULT);
+INSERT INTO Users VALUES ('Ham', 'password', 'Ham Bin Cob', 'Ham', 'M', '1997-10-10', 'Sengkang', DEFAULT);
+INSERT INTO Users VALUES ('Ivy', 'password', 'Ivy Bin Cob', 'Ivy', 'F', '1998-10-10', 'Sengkang', DEFAULT);
+INSERT INTO Users VALUES ('Jay', 'password', 'Jay Bin Cob', 'Jay', 'M', '1999-10-10', 'Sengkang', DEFAULT);
+INSERT INTO Users VALUES ('Kyl', 'password', 'Kyl Bin Cob', 'Kyl', 'M', '2000-10-10', 'Sengkang', DEFAULT);
+INSERT INTO Users VALUES ('Lam', 'password', 'Lam Bin Cob', 'Lam', 'M', '2001-10-10', 'Sengkang', DEFAULT);
+INSERT INTO Users VALUES ('Max', 'password', 'Max Bin Cob', 'Max', 'F', '2010-10-10', 'Sengkang', DEFAULT);
+
+INSERT INTO Driver VALUES ('ALi', 2, DEFAULT);
+INSERT INTO Driver VALUES ('Bob', 2, DEFAULT);
+INSERT INTO Driver VALUES ('Cob', 2, DEFAULT);
+INSERT INTO Driver VALUES ('Dad', 2, DEFAULT);
+
+INSERT INTO Passenger VALUES ('Dad', DEFAULT, DEFAULT, DEFAULT, DEFAULT);
+INSERT INTO Passenger VALUES ('Eli', DEFAULT, DEFAULT, DEFAULT, DEFAULT);
+INSERT INTO Passenger VALUES ('Fox', DEFAULT, DEFAULT, DEFAULT, DEFAULT);
+INSERT INTO Passenger VALUES ('God', DEFAULT, DEFAULT, DEFAULT, DEFAULT);
+INSERT INTO Passenger VALUES ('Ham', DEFAULT, DEFAULT, DEFAULT, DEFAULT);
+INSERT INTO Passenger VALUES ('Ivy', DEFAULT, DEFAULT, DEFAULT, DEFAULT);
+INSERT INTO Passenger VALUES ('Jay', DEFAULT, DEFAULT, DEFAULT, DEFAULT);
+INSERT INTO Passenger VALUES ('Kyl', DEFAULT, DEFAULT, DEFAULT, DEFAULT);
+INSERT INTO Passenger VALUES ('Lam', DEFAULT, DEFAULT, DEFAULT, DEFAULT);
+INSERT INTO Passenger VALUES ('Max', DEFAULT, DEFAULT, DEFAULT, DEFAULT);
+
+INSERT INTO Car VALUES ('ALi', 2, 3, 'Toyota', '2019-10-08');
+INSERT INTO Car VALUES ('Bob', 3, 5, 'Mazda', '2018-10-08');
+INSERT INTO Car VALUES ('Cob', 4, 3, 'Honda', '2017-10-08');
+INSERT INTO Car VALUES ('Dad', 5, 5, 'Lambo', '2016-10-08');
+
+INSERT INTO Ride VALUES ('Bob', 3, 5, 'Sengkang', 'Hougang', '12:00:00', '2019-11-08', DEFAULT, 3, DEFAULT);
+INSERT INTO Ride VALUES ('Bob', 3, 5, 'Sengkang', 'Hougang', '12:00:00', '2019-11-09', DEFAULT, 3, DEFAULT);
+INSERT INTO Ride VALUES ('Bob', 3, 5, 'Sengkang', 'Hougang', '13:00:00', '2019-11-09', DEFAULT, 3, DEFAULT);
+INSERT INTO Ride VALUES ('Cob', 4, 5, 'Sengkang', 'Hougang', '13:00:00', '2019-11-09', DEFAULT, 3, DEFAULT);
+INSERT INTO Ride VALUES ('Cob', 4, 3, 'Sengkang', 'Hougang', '13:00:00', '2019-11-09', DEFAULT, 3, DEFAULT);
+INSERT INTO Ride VALUES ('Dad', 5, 5, 'Sengkang', 'Hougang', '13:00:00', '2019-11-09', DEFAULT, 3, DEFAULT);
+
+INSERT INTO Reward ('D000001', DEFAULT);
+INSERT INTO Reward ('D000002', DEFAULT);
+INSERT INTO Reward ('D000003', DEFAULT);
+INSERT INTO Reward ('D000004', DEFAULT);
+INSERT INTO Reward ('D000005', DEFAULT);
+INSERT INTO Reward ('D000006', DEFAULT);
+INSERT INTO Reward ('R000001', DEFAULT);
+INSERT INTO Reward ('R000002', DEFAULT);
+
+
+INSERT INTO Discount ('D000001', 20, 1);
+INSERT INTO Discount ('D000002', 40, 2);
+INSERT INTO Discount ('D000003', 60, 3);
+INSERT INTO Discount ('D000004', 80, 4);
+INSERT INTO Discount ('D000005', 100, 5);
+INSERT INTO Discount ('D000006', 120, 8);
+
+INSERT INTO Points ('R000001', 50);
+INSERT INTO Points ('R000002', 10);
+
+INSERT INTO Benefits('B000001', 1);
+--insert earns 

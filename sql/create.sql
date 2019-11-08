@@ -1,5 +1,5 @@
 /* Change the schema default search path to 'group_project' (for current session only) */
-SET search_path = group_project;
+--SET search_path = group_project;
 
 /* Create the relational schemas */
 CREATE TABLE Users (
@@ -22,13 +22,11 @@ CREATE TABLE Users (
 CREATE TABLE Driver (
 	uname varchar(15) PRIMARY KEY REFERENCES Users
 		ON DELETE CASCADE,
-	expr integer NOT NULL, 							/* Experience */
 	rating numeric (3,2) DEFAULT 5.00,				/* Default Driver rating */
 	CHECK (											/* Ratings: Range of 0 to 5 inclusive */
 		rating <= 5
 	   	AND rating >= 0
-		),
-	CHECK (expr >= 0)								/* Check if experience is valid */
+		)
 );
 
 CREATE TABLE Passenger (
@@ -80,6 +78,7 @@ CREATE TABLE Ride (
 	ptime time,										/* Pick-up time */
 	pdate date,										/* Pick-up date */
 	dtime time DEFAULT NULL,						/* Drop-off time */
+	min_cost integer NOT NULL,						/* Minimum bid price */
 	curr_bids integer DEFAULT 0,					/* Current number of bidders */
 	FOREIGN KEY (uname, plate_num) REFERENCES Car
 		ON DELETE CASCADE,
@@ -89,10 +88,24 @@ CREATE TABLE Ride (
 			OR
 			(pdate = current_date AND ptime > (current_time + INTERVAL '1 hour'))
 		  ),
+	CHECK (min_cost > 0),
 	CHECK (pmax > 0)								/* Check if pmax is valid */
 													/* check (in trigger) if it is less than car's max cap */
 );
 
+CREATE TABLE Benefits (
+	bcode char(7) PRIMARY KEY,
+	bvalue integer NOT NULL,						/* Value of Benefit */	
+	CHECK (value > 0)								/* Check if amt is valid */							
+
+);
+ 
+CREATE TABLE Earns (
+	uname varchar(15) REFERENCES Driver,
+	bcode char(7) REFERENCES Benefits,
+	date_earned TIMESTAMP DEFAULT current_timestamp,
+	PRIMARY KEY (uname, bcode, date_earned)
+);
 
 /*---------------------------- 		PASSENGER PART		 ----------------------------------------*/
 CREATE TABLE Reward (
@@ -173,6 +186,7 @@ CREATE TABLE Transactions (
 	tprice integer,									/* Total price Passenger paid */
 	prating integer,								/* Rating given to passenger by driver */
 	drating integer,								/* Rating given to driver by passenger */
+	ptype varchar(7) NOT NULL,
 	closed boolean DEFAULT FALSE,
 	FOREIGN KEY (puname)
 		REFERENCES Passenger (uname),
@@ -194,15 +208,7 @@ CREATE TABLE Transactions (
 		  )
 );
 
-CREATE TABLE Payment (
-	tcode varchar(15) REFERENCES Transactions,		/* tcode */
-	ptype varchar(10) NOT NULL,						/* Payment Type */
-	CHECK (											
-			UPPER(ptype) = 'CARD'
-		   	OR
-			UPPER(ptype) = 'CASH'
-		  )
-);
+
 
 --review rewards system. For every trip, they obtain points? (according to price paid)
 --this can also be a trigger: upon insert on transaction, update points on Passenger uname
