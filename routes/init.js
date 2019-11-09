@@ -34,15 +34,17 @@ function initRouter(app) {
     app.get('/mycars', passport.authMiddleware(), show_cars);
     app.post('/addcar', passport.authMiddleware(), add_car);
     // these car-related API take in the plate number via query string which is ensured to exist via the appropriately-named middleware
-    app.get('/editcar', passport.authMiddleware(), ensure_query_string, show_editcar);
-    app.post('/editcar', passport.authMiddleware(), ensure_query_string, do_editcar);
-    app.get('/deletecar', passport.authMiddleware(), ensure_query_string, do_deletecar);
+    const ensure_platenumber = ensure_query_has(['plate_num'], withMsg("/mycars", "you need to specify a car"));
+    app.get('/editcar', passport.authMiddleware(), ensure_platenumber, show_editcar);
+    app.post('/editcar', passport.authMiddleware(), ensure_platenumber, do_editcar);
+    app.get('/deletecar', passport.authMiddleware(), ensure_platenumber, do_deletecar);
 
-    app.get('/addride', passport.authMiddleware(), ensure_query_string, show_addride);
-    app.post('/addride', passport.authMiddleware(), ensure_query_string, do_addride);
+    app.get('/addride', passport.authMiddleware(), ensure_platenumber, show_addride);
+    app.post('/addride', passport.authMiddleware(), ensure_platenumber, do_addride);
 
     app.get('/rides', passport.authMiddleware(), get_rides);
     app.get('/rideadmin', passport.authMiddleware(), show_rideadmin);
+    app.get('/deleteride', passport.authMiddleware(), show_rideadmin);
 }
 
 const show_rideadmin = (req, res, next) =>
@@ -59,7 +61,7 @@ function do_addride(req, res, next) {
             if (data.rowCount != 1) {
                 throw new Error("not inserted");
             }
-            res.redirect(withMsg("/myjobs", "ride added"))
+            res.redirect(withMsg("/rideadmin", "ride added"))
         })
         .catch(() => res.redirect(withMsg("/addride", "invalid ride information given") + "&plate_num=" + encodeURI(req.query.plate_num)));
 }
@@ -78,10 +80,9 @@ function do_deletecar(req, res, next) {
         .then(() => res.redirect(withMsg("/mycars", "car (and all rides associated) are deleted")))
         .catch(() => res.redirect(withMsg("/mycars", "nothing to delete it appears like")));
 }
-function ensure_query_string(req, res, next) {
-    return req.query['plate_num'] ?
-        next() :
-        res.redirect(withMsg("/mycars", "you need to specify a car"));
+function ensure_query_has(keys, redirto) {
+    return (req, res, next) =>
+        keys.every(k => req.query[k]) ? next () : res.redirect(redirto);
 }
 function do_editcar(req, res, next) {
     pool.query(sql_query.query.update_car, [req.user.username, req.query.plate_num, req.body.model, req.body.num_seats, req.body.edate])
