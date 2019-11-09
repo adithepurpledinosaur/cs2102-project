@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Page Title -->
+    <title>Bidding</title>
+    <% include partial/navbar.ejs %>
+    <br>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    
+    <!-- CSS for Styling -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    
+    <!-- JavaScript for Interactivity -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+</head>
+<body>
+    <h1><%= title %></h1>
+    <br>
+    <h2>Available Trips</h2>
+    <table class="table">
+        <thead class="thead-light">
+            <tr>
+                <th scope="col">Driver Name</th>
+                <th scope="col">Origin</th>
+                <th scope="col">Destination</th>
+                <th scope="col">Min Bid</th>
+                <th scope="col">Vacancy</th>
+                <th scope="col">Current Number of Bidders</th>
+                <!-- Fill up how much they want to bid -->
+                <th scope="col">Place Bid</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Use this once SQL Query is up -->
+            <!-- % for(var i=0; i<data.length; i++) { %>
+                <tr>
+                    <td>%= data[i].duname %></td>
+                    <td>%= data[i].origin %></td>
+                    <td>%= data[i].dest %></td>
+                    <td>%= data[i].min_bid %></td>
+                    <td>%= data[i].vacancy %></td>
+                    <td>%= data[i].curr_bidders %></td>                    
+                    <td>%= data[i].dest %></td>
+                    <td>
+                        <form action="/">
+                            <input type="text" name="bidAmount"><br><input type="submit" value="Place Bid" id==% "bid + rowNum" %>
+                        </form>
+                    </td>
+                </tr>
+                % } %> -->
+                <tr>
+                    <td>John Smith</td>
+                    <td>Sengkang</td>
+                    <td>Punggol</td>
+                    <td>$5.00</td>
+                    <td>2 Seats</td>
+                    <td>5 Bidders</td>
+                    <td>
+                        <form action="/">
+                            <input type="text" name="bidAmount"><input type="submit" value="Place Bid">
+                        </form>
+                    </td>
+                </tr>
+                <tr>
+                    <td>John Smith</td>
+                    <td>Sengkang</td>
+                    <td>Punggol</td>
+                    <td>$5.00</td>
+                    <td>2 Seats</td>
+                    <td>5 Bidders</td>
+                    <td><form action="/"><input type="text" name="bidAmount"><input type="submit" value="Place Bid"></form></td>
+                </tr>
+                <tr>
+                    <td>John Smith</td>
+                    <td>Sengkang</td>
+                    <td>Punggol</td>
+                    <td>$5.00</td>
+                    <td>2 Seats</td>
+                    <td>5 Bidders</td>
+                    <td><form action="/"><input type="text" name="bidAmount"><input type="submit" value="Place Bid"></form></td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <h2>Advertise New Trip</h2>
+        <form action="/">
+            <table>
+                <thead>
+                    <tr>
+                        <td>Origin</td>
+                        <td>Destination</td>
+                        <td>Car</td>
+                        <td>Min Bid</td>
+                        <td>Number of Seats</td>
+                        <td>Submit</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <td><input type="text" name="Destination"></td>
+                    <td><input type="text" name="Destination"></td>
+                    <td>
+                        <select name="payment" form="paymentForm">
+                            <option value="0">SGT1451L</option>
+                            <option value="1">Car2</option>
+                            <option value="2">Car3</option>
+                            <option value="3">Car4</option>
+                            <option value="4">Car5</option>
+                            <option value="5">Car6</option>
+                        </select>
+                    </td>
+                    <td><input type="number" name="MinBid"></td>
+                    <td><input type="number" name="NumSeats"></td>
+                    <td><input type="submit" value="Add Car"></td>
+                </tbody>
+            </table>
+        </form>
+        
+    </body>
+    </html>

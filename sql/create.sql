@@ -20,13 +20,13 @@ CREATE TABLE Users (
 );
 
 CREATE TABLE Driver (
-	uname varchar(15) PRIMARY KEY REFERENCES Users
-		ON DELETE CASCADE,
-	rating numeric (3,2) DEFAULT 5.00,				/* Default Driver rating */
-	CHECK (											/* Ratings: Range of 0 to 5 inclusive */
-		rating <= 5
-	   	AND rating >= 0
-		)
+    uname varchar(15) PRIMARY KEY REFERENCES Users ON DELETE CASCADE,
+    rating numeric(3, 2) DEFAULT 5.00,
+    /* Default Driver rating */
+    CHECK (
+        /* Ratings: Range of 0 to 5 inclusive */
+        rating <= 5
+        AND rating >= 0)
 );
 
 CREATE TABLE Passenger (
@@ -49,8 +49,8 @@ CREATE TABLE Passenger (
 		  )
 );
 
-/*---------------------------- 		DRIVER PART 		----------------------------------------*/
 
+/*---------------------------- 		DRIVER PART 		----------------------------------------*/
 CREATE TABLE Car (
 	uname varchar(15) REFERENCES Driver
 		ON DELETE CASCADE,
@@ -94,18 +94,20 @@ CREATE TABLE Ride (
 );
 
 CREATE TABLE Benefits (
-	bcode char(7) PRIMARY KEY,
-	bvalue integer NOT NULL,						/* Value of Benefit */	
-	CHECK (bvalue > 0)								/* Check if amt is valid */							
+    bcode char(7) PRIMARY KEY,
+    bvalue integer NOT NULL,
+    /* Value of Benefit */
+    CHECK (bvalue > 0)
+    /* Check if amt is valid */
+);
 
-);
- 
 CREATE TABLE Earns (
-	uname varchar(15) REFERENCES Driver,
-	bcode char(7) REFERENCES Benefits,
-	date_earned TIMESTAMP DEFAULT current_timestamp,
-	PRIMARY KEY (uname, bcode, date_earned)
+    uname varchar(15) REFERENCES Driver,
+    bcode char(7) REFERENCES Benefits,
+    date_earned TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (uname, bcode, date_earned)
 );
+
 
 /*---------------------------- 		PASSENGER PART		 ----------------------------------------*/
 CREATE TABLE Reward (
@@ -118,20 +120,24 @@ CREATE TABLE Reward (
 		  )
 );
 
-CREATE TABLE Discount (							/* Able to use the amount to deduct the ride fee */
-	rcode char(7) PRIMARY KEY REFERENCES Reward
-		ON DELETE CASCADE,
-	cost integer NOT NULL,						/* Cost of points to redeem */
-	amt integer NOT NULL,						/* Value of Discount Code */	
-	CHECK (amt > 0)								/* Check if amt is valid */							
-
+CREATE TABLE Discount (
+    /* Able to use the amount to deduct the ride fee */
+    rcode char(7) PRIMARY KEY REFERENCES Reward ON DELETE CASCADE,
+    cost integer NOT NULL,
+    /* Cost of points to redeem */
+    amt integer NOT NULL,
+    /* Value of Discount Code */
+    CHECK (amt > 0)
+    /* Check if amt is valid */
 );
 
-CREATE TABLE Points (								/* Able to use points to redeem discount codes */
-	rcode char(7) PRIMARY KEY REFERENCES Reward
-		ON DELETE CASCADE,
-	amt integer NOT NULL,							/* Amt of points */
-	CHECK (amt > 0)								/* Check if amt is valid */ 
+CREATE TABLE Points (
+    /* Able to use points to redeem discount codes */
+    rcode char(7) PRIMARY KEY REFERENCES Reward ON DELETE CASCADE,
+    amt integer NOT NULL,
+    /* Amt of points */
+    CHECK (amt > 0)
+    /* Check if amt is valid */
 );
 
 CREATE TABLE Obtains (								/* Passenger has... */
@@ -168,10 +174,9 @@ CREATE TABLE Bid (
 	CHECK (puname <> duname),						/* Not the same person */
 	CHECK (price > 0)								/* Checks if the price is valid */
 );
+
+
 /*---------------------------- 		TRANSACTION PART		 ----------------------------------------*/
-
-
-
 CREATE TABLE Transactions (
 	puname varchar(15),
 	duname varchar(15),
@@ -204,16 +209,3 @@ CREATE TABLE Transactions (
 		   	AND drating >= 0
 		  )
 );
-
-
-
---review rewards system. For every trip, they obtain points? (according to price paid)
---this can also be a trigger: upon insert on transaction, update points on Passenger uname
---another trigger: upon points accumalated > threshold -> upgrade mship status
---upon creation of acc, and upgrade of mship status, user gets a Discount code
---find a way to track what Discounts user has -> create table Has_discount (uname, D)
---make our life easier, make default discount codes last for 3 months
-
---should pcode be the primary key in Transact instead? 
---So pcode in payment,card,cash will be foreign keys referecing Transacts.
---potential area to put trigger? Upon adding transaction, update payment 	

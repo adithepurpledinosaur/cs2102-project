@@ -210,15 +210,15 @@ DROP FUNCTION IF EXISTS remove_ride() CASCADE;
 CREATE OR REPLACE FUNCTION remove_ride()
 RETURNS TRIGGER AS 
 $$ DECLARE 
-	oldptime timestamp;
 BEGIN 
-
-	SELECT R.pdatetime INTO oldptime
-	FROM Ride R
-	WHERE NEW.uname = R.uname
-	AND NEW.pdatetime::date = R.pdatetime::date;
-
-	IF oldptime + INTERVAL '1 hour' >= NEW.pdatetime THEN
+	
+        IF EXISTS (
+            SELECT 1 FROM Ride R
+            WHERE NEW.uname = R.uname
+            AND ((NEW.pdatetime > R.pdatetime AND NEW.pdatetime - INTERVAL '1 hour' <= R.pdatetime)
+              OR (NEW.pdatetime < R.pdatetime AND NEW.pdatetime + INTERVAL '1 hour' >= R.pdatetime))
+            LIMIT 1
+        ) THEN
 		RAISE NOTICE 'Ride Timing Violation';
 		RETURN NULL;
 	ELSE 
@@ -303,6 +303,13 @@ CREATE TRIGGER trip_closed
 AFTER UPDATE of closed ON Transactions 
 FOR EACH ROW WHEN (NEW.closed = TRUE)
 EXECUTE PROCEDURE update_dtime();
+
+-- -- these are not just mock data because the triggers require these relations added to function
+-- INSERT INTO Reward VALUES ('R000001', DEFAULT);
+-- INSERT INTO Reward VALUES ('R000002', DEFAULT);
+-- INSERT INTO Points VALUES ('R000001', 50);
+-- INSERT INTO Points VALUES ('R000002', 5);
+-- INSERT INTO Benefits VALUES ('B000001', 1);
 
 --Trigger to add to tpoints, every 5 dollars = 10 points--
 DROP FUNCTION IF EXISTS issue_points() CASCADE;
@@ -419,6 +426,8 @@ BEGIN
 	AND dest = NEW.dest
 	AND pdatetime = NEW.pdatetime;
 
+	RAISE NOTICE 'Discount applied';
+
 	RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -497,5 +506,3 @@ AFTER UPDATE of closed ON Transactions
 FOR EACH ROW WHEN (NEW.closed = TRUE)
 EXECUTE PROCEDURE issue_benefit();
 
---revisit driver benefits-- 
----------------------------
