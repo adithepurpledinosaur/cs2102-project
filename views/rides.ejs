@@ -1,13 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Rides</title>
+    <title>All Rides</title>
     <% include partial/header.ejs %>
 </head>
 <body>
     <% include partial/navbar.ejs %>
     <% include partial/msg.ejs %>
-    <h1>Rides</h1>
+    <h1>All Rides</h1>
+    <form method="get">
+        <div class="form-group">
+            <input type="text" class="form-control" name="search" placeholder="Filter by origin/destination">
+        </div>
+    </form>
     <table class="table">
         <thead class="thead-light">
             <!-- uname | plate_num | num_seats | model |   edate    | pmax | origin | dest |      pdatetime      | dtime | min_cost | curr_bids
@@ -36,7 +41,7 @@
                     <td><%= row.origin %></td>
                     <td><%= row.dest %></td>
                     <td><%= row.pdatetime.toLocaleString() %></td>
-                    <td><%= row.dtime || "dunno" %></td>
+                    <td><%= row.dtime || "not specified" %></td>
                     <td><%= row.curr_bids %></td>
                     <td><%= row.min_cost %></td>
                     <td>place bid somehow</td>

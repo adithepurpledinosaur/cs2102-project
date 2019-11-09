@@ -45,7 +45,7 @@ function initRouter(app) {
 }
 
 function get_rides(req, res, next) {
-    pool.query(sql_query.query.get_rides)
+    pool.query(sql_query.query.get_rides, [`%${req.query['search'] || ''}%`])
         .then(data => render(req, res, 'rides', {rows: data.rows}));
 }
 
