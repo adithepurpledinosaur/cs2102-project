@@ -37,8 +37,31 @@ function initRouter(app) {
     app.get('/editcar', passport.authMiddleware(), ensure_query_string, show_editcar);
     app.post('/editcar', passport.authMiddleware(), ensure_query_string, do_editcar);
     app.get('/deletecar', passport.authMiddleware(), ensure_query_string, do_deletecar);
+
+    app.get('/addride', passport.authMiddleware(), ensure_query_string, show_addride);
+    app.post('/addride', passport.authMiddleware(), ensure_query_string, do_addride);
 }
 
+function do_addride(req, res, next) {
+    pool.query(sql_query.query.create_ride, [req.user.username, req.query.plate_num, req.body.pmax, req.body.origin, req.body.dest, req.body.date + ' ' + req.body.time, req.body.dtime || null, req.body.min_cost])
+        .then(data => {
+            if (data.rowCount != 1) {
+                throw new Error("not inserted");
+            }
+            res.redirect(withMsg("/myjobs", "ride added"))
+        })
+        .catch(() => res.redirect(withMsg("/addride", "invalid ride information given") + "&plate_num=" + encodeURI(req.query.plate_num)));
+}
+function show_addride(req, res, next) {
+    pool.query(sql_query.query.get_car, [req.user.username, req.query.plate_num])
+        .then(data => {
+            if (data.rows.length == 0) {
+                throw new Error("You don't own this car");
+            }
+            render(req, res, 'addride', {row: data.rows[0]});
+        })
+        .catch(() => res.redirect(withMsg("/mycars", "cannot use unregistered car")));
+}
 function do_deletecar(req, res, next) {
     pool.query(sql_query.query.delete_car, [req.user.username, req.query.plate_num])
         .then(() => res.redirect(withMsg("/mycars", "car (and all rides associated) are deleted")))
@@ -47,7 +70,7 @@ function do_deletecar(req, res, next) {
 function ensure_query_string(req, res, next) {
     return req.query['plate_num'] ?
         next() :
-        res.redirect(withMsg("/mycars", "please choose car to edit/delete (if you followed a link here file a bug report)"));
+        res.redirect(withMsg("/mycars", "you need to specify a car"));
 }
 function do_editcar(req, res, next) {
     pool.query(sql_query.query.update_car, [req.user.username, req.query.plate_num, req.body.model, req.body.num_seats, req.body.edate])
@@ -62,7 +85,7 @@ function show_editcar(req, res, next) {
             }
             render(req, res, 'editcar', {row: data.rows[0]});
         })
-        .catch(() => res.redirect(withMsg("/mycars", "stop trying to edit cars you don't own")));
+        .catch(() => res.redirect(withMsg("/mycars", "cannot use unregistered car")));
 }
 
 function show_cars(req, res, next) {

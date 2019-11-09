@@ -27,6 +27,7 @@
                     <td><%= row.num_seats %></td>
                     <td><%= row.edate.toISOString().split('T')[0] %></td>
                     <td>
+                        <a href="/addride?plate_num=<%= encodeURI(row.plate_num) %>">New Ride</a> |
                         <a href="/editcar?plate_num=<%= encodeURI(row.plate_num) %>">Edit</a> |
                         <a href="/deletecar?plate_num=<%= encodeURI(row.plate_num) %>">Delete</a>
                     </td>

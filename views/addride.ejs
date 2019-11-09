@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Publishing new ride</title>
+        <% include partial/header.ejs %>
+    </head>
+    <body>
+        <% include partial/navbar.ejs %>
+        <h1>Publishing a new ride using car <%= row.plate_num %></h1>
+        <% include partial/msg.ejs %>
+        <form action="/addride?plate_num=<%= encodeURI(row.plate_num) %>" role="form" method="post">
+            <div class="form-group">
+                <label>How many available seats? (<%= row.plate_num %> has <%= row.num_seats %> seats FYI)
+                    <input type="number" min="1" max="100" class="form-control" name="pmax" value="<%= row.num_seats %>"></label>
+            </div>
+            <div class="form-group">
+                <label>Depart on
+                    <input type="date" name="date"></label>
+                <label>at
+                    <input type="time" name="time"> (must be at least 1h from now)</label>
+            </div>
+            <div class="form-group">
+                <label>From
+                    <input type="text" class="form-control" name="origin" placeholder="setting off from.."></label>
+            </div>
+            <div class="form-group">
+                <label>To
+                    <input type="text" class="form-control" name="dest" placeholder="going to.."></label>
+            </div>
+            <div class="form-group">
+                <label>Estimated to arrive at (optional)
+                    <input type="time" class="form-control" name="dtime"></label>
+            </div>
+            <div class="form-group">
+                <label>Minimum bid
+                    <input type="number" min="1" class="form-control" name="min_cost"></label>
+            </div>
+            <input type="submit" class="btn btn-primary" value="Publish ride">
+        </form>
+    </body>
+</html>
