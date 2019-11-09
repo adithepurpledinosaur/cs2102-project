@@ -14,6 +14,7 @@ sql.query = {
     get_cars: 'SELECT * FROM Car WHERE uname = $1',
     get_car: 'SELECT * FROM Car WHERE uname = $1 AND plate_num = $2',
     update_car: 'UPDATE Car SET model = $3, num_seats = $4, edate = $5 WHERE uname = $1 AND plate_num = $2',
+    delete_car: 'DELETE FROM Car WHERE uname = $1 AND plate_num = $2',
 }
 
 module.exports = sql
