@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Rides</title>
+    <% include partial/header.ejs %>
+</head>
+<body>
+    <% include partial/navbar.ejs %>
+    <% include partial/msg.ejs %>
+    <h1>Rides</h1>
+    <table class="table">
+        <thead class="thead-light">
+            <!-- uname | plate_num | num_seats | model |   edate    | pmax | origin | dest |      pdatetime      | dtime | min_cost | curr_bids
+            -->
+            <tr>
+                <th scope="col">Driver</th>
+                <th scope="col">Plate number</th>
+                <th scope="col">Model</th>
+                <th scope="col">Available seats</th>
+                <th scope="col">From</th>
+                <th scope="col">To</th>
+                <th scope="col">Departure time</th>
+                <th scope="col">ETA</th>
+                <th scope="col">Bidders</th>
+                <th scope="col">Minimum bid</th>
+                <th scope="col">Place bid</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% for(let row of rows) { %>
+                <tr>
+                    <td><%= row.uname %></td>
+                    <td><%= row.plate_num %></td>
+                    <td><%= row.model %></td>
+                    <td><%= row.pmax %></td>
+                    <td><%= row.origin %></td>
+                    <td><%= row.dest %></td>
+                    <td><%= row.pdatetime.toLocaleString() %></td>
+                    <td><%= row.dtime || "dunno" %></td>
+                    <td><%= row.curr_bids %></td>
+                    <td><%= row.min_cost %></td>
+                    <td>place bid somehow</td>
+                </tr>
+            <% } %>
+        </tbody>
+    </table>
+</body>
+</html>

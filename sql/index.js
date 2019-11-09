@@ -17,6 +17,7 @@ sql.query = {
     delete_car: 'DELETE FROM Car WHERE uname = $1 AND plate_num = $2',
 
     create_ride: 'INSERT INTO Ride (uname, plate_num, pmax, origin, dest, pdatetime, dtime, min_cost) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
+    get_rides: 'SELECT * FROM Car NATURAL JOIN Ride',
 }
 
 module.exports = sql

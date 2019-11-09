@@ -40,6 +40,13 @@ function initRouter(app) {
 
     app.get('/addride', passport.authMiddleware(), ensure_query_string, show_addride);
     app.post('/addride', passport.authMiddleware(), ensure_query_string, do_addride);
+
+    app.get('/rides', passport.authMiddleware(), get_rides);
+}
+
+function get_rides(req, res, next) {
+    pool.query(sql_query.query.get_rides)
+        .then(data => render(req, res, 'rides', {rows: data.rows}));
 }
 
 function do_addride(req, res, next) {
