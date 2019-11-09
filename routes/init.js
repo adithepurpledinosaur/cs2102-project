@@ -31,7 +31,18 @@ function initRouter(app) {
     app.get('/unlockpassenger', passport.authMiddleware(), unlock_passenger);
     app.get('/unlockdriver', passport.authMiddleware(), unlock_driver);
 
-    app.get('/mycars', (req, res, next) => res.render('mycars'));
+    app.get('/mycars', passport.authMiddleware(), (req, res, next) => render(req, res, 'mycars')); // change later
+    app.post('/addcar', passport.authMiddleware(), add_car);
+}
+
+function add_car(req, res, next) {
+    pool.query(sql_query.query.create_car,
+        [req.user.username, req.body.plate_num, req.body.num_seats, req.body.model, req.body.edate])
+        .then(() => res.redirect(withMsg("/mycars", "car added")))
+        .catch(err => {
+            console.log(err);
+            res.redirect(withMsg("/mycars", "failed to add car, please ensure you have activated your driver features and inputs are valid"))
+        });
 }
 
 function unlock_driver(req, res, next) {
