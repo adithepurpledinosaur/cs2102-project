@@ -7,18 +7,21 @@
     <body>
         <h1>Register</h1>
         <% include partial/msg.ejs %>
-        <form id="html_form" action="register" role="form" method="post">
+        <form id="html_form" action="/register" role="form" method="post">
             <div class="form-group">
-                <label for="username">Username</label>
+                <label for="username">Username
                 <input type="text" class="form-control" id="username" name="username" aria-describedby="usernameHelp" placeholder="Enter your desired username">
+                </label>
             </div>
             <div class="form-group">
-                <label for="password">Password</label>
+                <label for="password">Password
                 <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password">
+                </label>
             </div>
             <div class="form-group">
-                <label for="fullname">Full Name</label>
+                <label for="fullname">Full Name
                 <input type="text" class="form-control" id="fullname" name="fullname" placeholder="Enter your name">
+                </label>
             </div>
             <button type="submit" class="btn btn-primary">Submit</button>
         </form>
