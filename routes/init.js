@@ -33,14 +33,21 @@ function initRouter(app) {
 
     app.get('/mycars', passport.authMiddleware(), show_cars);
     app.post('/addcar', passport.authMiddleware(), add_car);
+    // these car-related API take in the plate number via query string which is ensured to exist via the appropriately-named middleware
     app.get('/editcar', passport.authMiddleware(), ensure_query_string, show_editcar);
     app.post('/editcar', passport.authMiddleware(), ensure_query_string, do_editcar);
+    app.get('/deletecar', passport.authMiddleware(), ensure_query_string, do_deletecar);
 }
 
+function do_deletecar(req, res, next) {
+    pool.query(sql_query.query.delete_car, [req.user.username, req.query.plate_num])
+        .then(() => res.redirect(withMsg("/mycars", "car (and all rides associated) are deleted")))
+        .catch(() => res.redirect(withMsg("/mycars", "nothing to delete it appears like")));
+}
 function ensure_query_string(req, res, next) {
     return req.query['plate_num'] ?
         next() :
-        res.redirect(withMsg("/mycars", "please choose car to edit (if you followed a link here file a bug report)"));
+        res.redirect(withMsg("/mycars", "please choose car to edit/delete (if you followed a link here file a bug report)"));
 }
 function do_editcar(req, res, next) {
     pool.query(sql_query.query.update_car, [req.user.username, req.query.plate_num, req.body.model, req.body.num_seats, req.body.edate])
