@@ -33,6 +33,29 @@ function initRouter(app) {
 
     app.get('/mycars', passport.authMiddleware(), show_cars);
     app.post('/addcar', passport.authMiddleware(), add_car);
+    app.get('/editcar', passport.authMiddleware(), ensure_query_string, show_editcar);
+    app.post('/editcar', passport.authMiddleware(), ensure_query_string, do_editcar);
+}
+
+function ensure_query_string(req, res, next) {
+    return req.query['plate_num'] ?
+        next() :
+        res.redirect(withMsg("/mycars", "please choose car to edit (if you followed a link here file a bug report)"));
+}
+function do_editcar(req, res, next) {
+    pool.query(sql_query.query.update_car, [req.user.username, req.query.plate_num, req.body.model, req.body.num_seats, req.body.edate])
+        .then(() => res.redirect("/mycars"))
+        .catch(() => res.redirect(withMsg("/mycars", "failed to edit car, please ensure you have activated your driver features and inputs are valid")));
+}
+function show_editcar(req, res, next) {
+    pool.query(sql_query.query.get_car, [req.user.username, req.query.plate_num])
+        .then(data => {
+            if (data.rows.length == 0) {
+                throw new Error("You don't own this car");
+            }
+            render(req, res, 'editcar', {row: data.rows[0]});
+        })
+        .catch(() => res.redirect(withMsg("/mycars", "stop trying to edit cars you don't own")));
 }
 
 function show_cars(req, res, next) {
@@ -44,10 +67,7 @@ function add_car(req, res, next) {
     pool.query(sql_query.query.create_car,
         [req.user.username, req.body.plate_num, req.body.num_seats, req.body.model, req.body.edate])
         .then(() => res.redirect(withMsg("/mycars", "car added")))
-        .catch(err => {
-            console.log(err);
-            res.redirect(withMsg("/mycars", "failed to add car, please ensure you have activated your driver features and inputs are valid"))
-        });
+        .catch(err => res.redirect(withMsg("/mycars", "failed to add car, please ensure you have activated your driver features and inputs are valid")));
 }
 
 function unlock_driver(req, res, next) {
