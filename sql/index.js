@@ -38,7 +38,7 @@ sql.query = {
         INSERT INTO Bid (puname, duname, plate_num, origin, dest, pdatetime, price)
         VALUES ($1, $2, $3, $4, $5, $6, $7)
         ON CONFLICT (puname, duname, plate_num, origin, dest, pdatetime)
-        DO UPDATE SET price = EXCLUDED.price`,
+        DO UPDATE SET price = EXCLUDED.price btime = current_time`,
     delete_bid: 'DELETE FROM Bid WHERE puname = $1 AND duname = $2 AND plate_num = $3 AND origin = $4 AND dest = $5 AND pdatetime = $6',
 }
 
