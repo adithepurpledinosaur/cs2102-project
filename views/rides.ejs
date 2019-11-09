@@ -13,6 +13,7 @@
             <input type="text" class="form-control" name="search" placeholder="Filter by origin/destination">
         </div>
     </form>
+    <p>As with CORS, bidding 0 retracts a bid.</p>
     <table class="table">
         <thead class="thead-light">
             <!-- uname | plate_num | num_seats | model |   edate    | pmax | origin | dest |      pdatetime      | dtime | min_cost | curr_bids
@@ -28,7 +29,7 @@
                 <th scope="col">ETA</th>
                 <th scope="col">Bidders</th>
                 <th scope="col">Minimum bid</th>
-                <th scope="col">Place bid</th>
+                <th scope="col">Your bid</th>
             </tr>
         </thead>
         <tbody>
@@ -44,7 +45,15 @@
                     <td><%= row.dtime || "not specified" %></td>
                     <td><%= row.curr_bids %></td>
                     <td><%= row.min_cost %></td>
-                    <td>place bid somehow</td>
+                    <td>
+                        <form action="/placebid" method="post">
+                            <input type="number" class="form-control" min="0" name="price" value="<%= row.yourbid || 0 %>" >
+                            <input type="hidden" name="tomake">
+                        </form>
+                    </td>
+                </tr>
+                <tr>
+                    <pre><%= JSON.stringify(row) %></pre>
                 </tr>
             <% } %>
         </tbody>

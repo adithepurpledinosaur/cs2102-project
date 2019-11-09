@@ -59,7 +59,7 @@ const show_rideadmin = (req, res, next) =>
         .then(data => render(req, res, 'rideadmin', {rows: data.rows}));
 
 const get_rides = (req, res, next) =>
-    pool.query(sql_query.query.get_rides, [`%${req.query['search'] || ''}%`])
+    pool.query(sql_query.query.get_rides, [req.user.username, `%${req.query['search'] || ''}%`])
         .then(data => render(req, res, 'rides', {rows: data.rows}));
 
 function do_addride(req, res, next) {
