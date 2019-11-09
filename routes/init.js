@@ -28,7 +28,7 @@ function initRouter(app) {
     app.get('/updateprofile', passport.authMiddleware(), show_updateprofile);
     app.post('/updateprofile', passport.authMiddleware(), do_updateprofile);
 
-    app.get('/unlockpassenger', passport.authMiddleware(), unlock_passenger);
+    //app.get('/unlockpassenger', passport.authMiddleware(), unlock_passenger);
     app.get('/unlockdriver', passport.authMiddleware(), unlock_driver);
 
     app.get('/mycars', passport.authMiddleware(), (req, res, next) => render(req, res, 'mycars')); // change later
@@ -50,6 +50,7 @@ function unlock_driver(req, res, next) {
         .then(() => res.redirect(withMsg("/dashboard", "driver features unlocked")))
         .catch(err => res.redirect(withMsg("/dashboard", "already a driver")));
 }
+// done by a trigger
 function unlock_passenger(req, res, next) {
     pool.query(sql_query.query.create_passenger, [req.user.username])
         .then(() => res.redirect(withMsg("/dashboard", "passenger features unlocked")))
