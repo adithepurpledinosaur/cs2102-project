@@ -12,6 +12,8 @@ sql.query = {
 
     create_car: 'INSERT INTO Car VALUES ($1, $2, $3, $4, $5)',
     get_cars: 'SELECT * FROM Car WHERE uname = $1',
+    get_car: 'SELECT * FROM Car WHERE uname = $1 AND plate_num = $2',
+    update_car: 'UPDATE Car SET model = $3, num_seats = $4, edate = $5 WHERE uname = $1 AND plate_num = $2',
 }
 
 module.exports = sql

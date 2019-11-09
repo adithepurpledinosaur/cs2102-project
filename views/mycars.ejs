@@ -20,22 +20,20 @@
             </tr>
         </thead>
         <tbody>
-            <% for(let i=0; i<rows.length; i++) { %>
+            <% for(let row of rows) { %>
                 <tr>
-                    <td><%= rows[i].plate_num %></td>
-                    <td><%= rows[i].model %></td>
-                    <td><%= rows[i].num_seats %></td>
-                    <td><%= rows[i].edate.toISOString().split('T')[0] %></td>
+                    <td><%= row.plate_num %></td>
+                    <td><%= row.model %></td>
+                    <td><%= row.num_seats %></td>
+                    <td><%= row.edate.toISOString().split('T')[0] %></td>
                     <td>
-                        <a href="/editcar?c=<%= rows[i].plate_num %>">Edit</a>
-                        |
-                        <a href="/deletecar?c=<%= rows[i].plate_num %>">Delete</a>
+                        <a href="/editcar?plate_num=<%= encodeURI(row.plate_num) %>">Edit</a> |
+                        <a href="/deletecar?plate_num=<%= encodeURI(row.plate_num) %>">Delete</a>
                     </td>
                 </tr>
             <% } %>
         </tbody>
     </table>
-    
     <h1>Add a car</h1>
     <form action="/addcar" role="form" method="post">
         <div class="form-group">
@@ -52,7 +50,7 @@
             <label>COE Expiry (1 year of remaining validity needed)
                 <input type="date" class="form-control" name="edate"></label>
         </div>
-        <input type="submit" value="Add Car">
+        <input type="submit" value="Add Car" class="btn btn-primary">
     </form>
 </body>
 </html>
