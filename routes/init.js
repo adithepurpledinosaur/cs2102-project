@@ -44,8 +44,15 @@ function initRouter(app) {
 
     app.get('/rides', passport.authMiddleware(), get_rides);
     app.get('/rideadmin', passport.authMiddleware(), show_rideadmin);
-    app.get('/deleteride', passport.authMiddleware(), show_rideadmin);
+    app.get('/deleteride', passport.authMiddleware(),
+        ensure_query_has(['plate_num', 'origin', 'dest', 'pdatetime'], withMsg("/rideadmin","")),
+        delete_ride);
 }
+
+const delete_ride = (req, res, next) =>
+    pool.query(sql_query.query.delete_ride, [req.user.username, req.query.plate_num, req.query.origin, req.query.dest, req.query.pdatetime])
+        .then(() => res.redirect(withMsg("/rideadmin", "ride deleted")))
+        .catch(() => res.redirect(withMsg("/rideadmin", "invalid delete attempt")))
 
 const show_rideadmin = (req, res, next) =>
     pool.query(sql_query.query.get_drivers_rides, [req.user.username])

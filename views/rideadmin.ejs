@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>All Rides</title>
+    <title>My jobs</title>
     <% include partial/header.ejs %>
 </head>
 <body>
@@ -10,11 +10,12 @@
     <%
     const genQueryString = (row, args) => args.map(a => `${a}=${encodeURI(row[a])}`).join('&')
     %>
-    <h1>All Rides</h1>
+    <h1>My Rides</h1>
+    <p>To add a ride <a href="/mycars">choose which car you want to use</a> first.</p>
     <table class="table">
         <thead class="thead-light">
             <tr>
-                <th scope="col">Plate number</th>
+                <th scope="col">Plate No.</th>
                 <th scope="col">Model</th>
                 <th scope="col">Available seats</th>
                 <th scope="col">From</th>
