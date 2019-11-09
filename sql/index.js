@@ -16,7 +16,9 @@ sql.query = {
     update_car: 'UPDATE Car SET model = $3, num_seats = $4, edate = $5 WHERE uname = $1 AND plate_num = $2',
     delete_car: 'DELETE FROM Car WHERE uname = $1 AND plate_num = $2',
 
-    create_ride: 'INSERT INTO Ride (uname, plate_num, pmax, origin, dest, pdatetime, dtime, min_cost) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
+    create_ride: `
+        INSERT INTO Ride (uname, plate_num, pmax, origin, dest, pdatetime, dtime, min_cost)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
     delete_ride: 'DELETE FROM Ride WHERE uname = $1 AND plate_num = $2 AND origin = $3 AND dest = $4 AND pdatetime = $5',
     // I want the user to see their own bid when viewing rides
     get_rides: `
@@ -30,7 +32,14 @@ sql.query = {
         ) AS R
         LEFT JOIN (SELECT * FROM Bid WHERE puname = $1) AS B
         ON (r.uname, r.plate_num, r.origin, r.dest, r.pdatetime) = (b.duname, b.plate_num, b.origin, b.dest, b.pdatetime)`,
-    get_drivers_rides: "SELECT * FROM Car NATURAL JOIN Ride WHERE uname = $1 ORDER BY pdatetime",
+    get_drivers_rides: 'SELECT * FROM Car NATURAL JOIN Ride WHERE uname = $1 ORDER BY pdatetime',
+
+    upsert_bid: `
+        INSERT INTO Bid (puname, duname, plate_num, origin, dest, pdatetime, price)
+        VALUES ($1, $2, $3, $4, $5, $6, $7)
+        ON CONFLICT (puname, duname, plate_num, origin, dest, pdatetime)
+        DO UPDATE SET price = EXCLUDED.price`,
+    delete_bid: 'DELETE FROM Bid WHERE puname = $1 AND duname = $2 AND plate_num = $3 AND origin = $4 AND dest = $5 AND pdatetime = $6',
 }
 
 module.exports = sql

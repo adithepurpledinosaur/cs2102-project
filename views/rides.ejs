@@ -46,14 +46,17 @@
                     <td><%= row.curr_bids %></td>
                     <td><%= row.min_cost %></td>
                     <td>
-                        <form action="/placebid" method="post">
+                        <form action="/updatebid" method="post">
                             <input type="number" class="form-control" min="0" name="price" value="<%= row.yourbid || 0 %>" >
-                            <input type="hidden" name="tomake">
+                            <!-- send enough of current context over -->
+                            <%_ row.pdatetime = row.pdatetime.toString().split(" GMT")[0];
+                            for (const x of ['uname', 'plate_num', 'origin', 'dest', 'pdatetime']) { _%>
+                                    <input type="hidden" name="<%= x %>" value="<%= row[x] %>">
+                            <%_ } _%>
+                            <input type="hidden" name="search" value="<%= search %>">
+                            <input type="submit" class="form-control btn btn-primary" value="Update bid">
                         </form>
                     </td>
-                </tr>
-                <tr>
-                    <pre><%= JSON.stringify(row) %></pre>
                 </tr>
             <% } %>
         </tbody>
