@@ -124,15 +124,15 @@ DROP FUNCTION IF EXISTS remove_ride() CASCADE;
 CREATE OR REPLACE FUNCTION remove_ride()
 RETURNS TRIGGER AS 
 $$ DECLARE 
-	oldpdatetime timestamp;
 BEGIN 
 
-	SELECT R.pdatetime INTO oldpdatetime
-	FROM Ride R
-	WHERE NEW.uname = R.uname
-	AND NEW.pdatetime = R.pdatetime;
-
-	IF oldpdatetime + INTERVAL '1 hour' >= NEW.pdatetime THEN
+        IF (
+            SELECT 1 FROM Ride R
+            WHERE NEW.uname = R.uname
+            AND (NEW.pdatetime - INTERVAL '1 hour' <= R.pdatetime
+              OR NEW.pdatetime + INTERVAL '1 hour' >= R.pdatetime)
+            LIMIT 1
+        ) THEN
 		RAISE NOTICE 'Ride Timing Violation';
 		RETURN NULL;
 	ELSE 
