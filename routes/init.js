@@ -31,8 +31,13 @@ function initRouter(app) {
     //app.get('/unlockpassenger', passport.authMiddleware(), unlock_passenger);
     app.get('/unlockdriver', passport.authMiddleware(), unlock_driver);
 
-    app.get('/mycars', passport.authMiddleware(), (req, res, next) => render(req, res, 'mycars')); // change later
+    app.get('/mycars', passport.authMiddleware(), show_cars);
     app.post('/addcar', passport.authMiddleware(), add_car);
+}
+
+function show_cars(req, res, next) {
+    pool.query(sql_query.query.get_cars, [req.user.username])
+        .then(data => render(req, res, 'mycars', {rows: data.rows}));
 }
 
 function add_car(req, res, next) {

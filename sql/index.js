@@ -11,6 +11,7 @@ sql.query = {
     create_passenger: 'INSERT INTO Passenger VALUES ($1, DEFAULT, DEFAULT, DEFAULT, DEFAULT)',
 
     create_car: 'INSERT INTO Car VALUES ($1, $2, $3, $4, $5)',
+    get_cars: 'SELECT * FROM Car WHERE uname = $1',
 }
 
 module.exports = sql

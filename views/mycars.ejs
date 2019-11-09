@@ -6,87 +6,37 @@
 </head>
 <body>
     <% include partial/navbar.ejs %>
-
-<script>
-    function getCarPlate(rowNum) {
-        return document.querySelector('row' + rowNum).dataset.plate_no;
-    }
-</script>
-
-    <h1>My cars</h1>
     <% include partial/msg.ejs %>
+    <h1>My cars</h1>
     <table class="table">
         <thead class="thead-light">
             <tr>
                 <th scope="col">Plate No.</th>
                 <th scope="col">Model</th>
-                <th scope="col">COE Expiry</th>
+                <th scope="col">Seats</th>
+                <th scope="col">COE Expires on</th>
                 <!-- Edit/Delete -->
                 <th scope="col">Action</th>
             </tr>
         </thead>
         <tbody>
-            <!-- Use this once SQL Query is up -->
-            <!-- % for(var i=0; i<data.length; i++) { %>
+            <% for(let i=0; i<rows.length; i++) { %>
                 <tr>
-                    <td id={%= 'row' + i%> >{%= data[i].plate_no %></td>
-                    <td>{%= data[i].model %></td>
-                    <td>{%= data[i].sdate %></td>
+                    <td><%= rows[i].plate_num %></td>
+                    <td><%= rows[i].model %></td>
+                    <td><%= rows[i].num_seats %></td>
+                    <td><%= rows[i].edate.toISOString().split('T')[0] %></td>
                     <td>
-                        <form action="/">
-                            <input type="hidden" id="carPlate" name="carPlate"
-                                value={% document.querySelector('row' + rowNum).dataset.plate_no %>>
-                            <input type="submit" value="Edit">
-                        </form>
-                        <form action="/">
-                            <input type="submit" value="Delete">
-                        </form>
+                        <a href="/editcar?c=<%= rows[i].plate_num %>">Edit</a>
+                        |
+                        <a href="/deletecar?c=<%= rows[i].plate_num %>">Delete</a>
                     </td>
                 </tr>
-            % } %> -->
-            <tr>
-                <td>SGT1451L</td>
-                <td>Toyota Prius</td>
-                <td>19/02/2020</td>
-                <td>
-                    <form action="/">
-                        <input type="submit" value="Edit">
-                    </form>
-                    <form action="/">
-                        <input type="submit" value="Delete">
-                    </form>
-                </td>
-            </tr>
-            <tr>
-                <td>SGT1451L</td>
-                <td>Toyota Prius</td>
-                <td>19/02/2020</td>
-                <td>
-                    <form action="/">
-                        <input type="submit" value="Edit">
-                    </form>
-                    <form action="/">
-                        <input type="submit" value="Delete">
-                    </form>
-                </td>
-            </tr>
-            <tr>
-                    <td>SGT1451L</td>
-                    <td>Toyota Prius</td>
-                    <td>19/02/2020</td>
-                    <td>
-                        <form action="/">
-                            <input type="submit" value="Edit">
-                        </form>
-                        <form action="/">
-                            <input type="submit" value="Delete">
-                        </form>
-                    </td>
-            </tr>
+            <% } %>
         </tbody>
     </table>
     
-    <h2>Add a car</h2>
+    <h1>Add a car</h1>
     <form action="/addcar" role="form" method="post">
         <div class="form-group">
             <label>Plate number (just the numbers for now) <input type="number" min="1" max="9999" class="form-control" name="plate_num" placeholder="1234"></label>
