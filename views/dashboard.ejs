@@ -6,6 +6,7 @@
 </head>
 <body>
     <% include partial/navbar.ejs %>
+    <br>
     <h1>Hi <%= username %></h1>
     <% include partial/msg.ejs %>
     <h2>My account</h2>
@@ -38,6 +39,10 @@
                 <td><a href="/rides">Find rides</a></td>
                 <td>Find open rides</td>
             </tr>
+            <tr>
+                <td><a href="/rewards">View rewards</a></td>
+                <td>View and claim rewards using your points</td>
+            </tr>
         </tbody>
     </table>
 
@@ -62,6 +67,10 @@
             <tr>
                 <td><a href="/rideadmin">Manage my rides</a></td>
                 <td>Manage or cancel rides that you published</td>
+            </tr>
+            <tr>
+                <td><a href="/benefits">View benefits</a></td>
+                <td>View the total incentives you have earned</td>
             </tr>
         </tbody>
     </table>

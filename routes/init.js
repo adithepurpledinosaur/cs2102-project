@@ -47,7 +47,19 @@ function initRouter(app) {
     app.get('/deleteride', passport.authMiddleware(),
         ensure_query_has(['plate_num', 'origin', 'dest', 'pdatetime'], withMsg("/rideadmin","")),
         delete_ride);
+
+    app.get('/rewards', passport.authMiddleware(), show_rewards);
+    app.get('/benefits', passport.authMiddleware(), show_benefits);
+
 }
+
+const show_rewards = (req, res, next) =>
+    pool.query(sql_query.query.get_drivers_rides, [req.user.username])
+        .then(data => render(req, res, 'rewards', {rows: data.rows}));
+
+const show_benefits = (req, res, next) =>
+    pool.query(sql_query.query.get_drivers_rides, [req.user.username])
+        .then(data => render(req, res, 'benefits', {rows: data.rows}));
 
 const delete_ride = (req, res, next) =>
     pool.query(sql_query.query.delete_ride, [req.user.username, req.query.plate_num, req.query.origin, req.query.dest, req.query.pdatetime])

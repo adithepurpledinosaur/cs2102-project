@@ -10,6 +10,7 @@
     <%
     const genQueryString = (row, args) => args.map(a => `${a}=${encodeURI(row[a])}`).join('&')
     %>
+    <br>
     <h1>My Rides</h1>
     <p>To add a ride <a href="/mycars">choose which car you want to use</a> first.</p>
     <table class="table">
