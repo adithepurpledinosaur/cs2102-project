@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Cars</title>
+    <% include partial/header.ejs %>
+</head>
+<body>
+    <% include partial/navbar.ejs %>
+    <% include partial/msg.ejs %>
+    <h1>My cars</h1>
+    <table class="table">
+        <thead class="thead-light">
+            <tr>
+                <th scope="col">Plate No.</th>
+                <th scope="col">Model</th>
+                <th scope="col">Passenger seats</th>
+                <th scope="col">COE Expires on</th>
+                <!-- Edit/Delete -->
+                <th scope="col">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% for(let row of rows) { %>
+                <tr>
+                    <td><%= row.plate_num %></td>
+                    <td><%= row.model %></td>
+                    <td><%= row.num_seats %></td>
+                    <td><%= row.edate.toISOString().split('T')[0] %></td>
+                    <td>
+                        <a href="/editcar?plate_num=<%= encodeURI(row.plate_num) %>">Edit</a> |
+                        <a href="/deletecar?plate_num=<%= encodeURI(row.plate_num) %>">Delete</a>
+                    </td>
+                </tr>
+            <% } %>
+        </tbody>
+    </table>
+    <h1>Add a car</h1>
+    <form action="/addcar" role="form" method="post">
+        <div class="form-group">
+            <label>Plate number (just the numbers for now) <input type="number" min="1" max="9999" class="form-control" name="plate_num" placeholder="1234"></label>
+        </div>
+        <div class="form-group">
+            <label>Model (in 7 chars) <input type="text" class="form-control" name="model" placeholder="GTR"></label>
+        </div>
+        <div class="form-group">
+            <label>How many passenger seats?
+                <input type="number" min="1" max="100" class="form-control" name="num_seats"></label>
+        </div>
+        <div class="form-group">
+            <label>COE Expiry (1 year of remaining validity needed)
+                <input type="date" class="form-control" name="edate"></label>
+        </div>
+        <input type="submit" value="Add Car" class="btn btn-primary">
+    </form>
+</body>
+</html>

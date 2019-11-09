@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Page Title -->
+    <title>Rewards</title>
+    <% include partial/navbar.ejs %>
+    <br>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    
+    <!-- CSS for Styling -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    
+    <!-- JavaScript for Interactivity -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+</head>
+<body>
+    <h1>Claim your rewards! Total spendable points: 70</h1>
+    <br>
+    <h2>My discount codes</h2>
+    <table class="table">
+        <thead class="thead-light">
+            <tr>
+                <th scope="col">Discount Code</th>
+                <th scope="col">Discount Amount</th>
+                <th scope="col">Expiry Date</th>
+                <th scope="col">Redeemed</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>D000003</td>
+                <td>$3.00</td>
+                <td>08/01/2020</td>
+                <td><p style="color:green">Available</p></td>
+            </tr>
+            <tr>
+                <td>D000002</td>
+                <td>$2.00</td>
+                <td>12/12/2019</td>
+                <td><p style="color:grey">Redeemed</p></td>
+            </tr>
+            <tr>
+                <td>D000001</td>
+                <td>$1.00</td>
+                <td>08/10/2019</td>
+                <td><p style="color:red">Expired</p></td>
+            </tr>
+        </tbody>
+    </table>
+    <h2>Purchase discount codes</h2>
+    <table class="table">
+        <thead class="thead-light">
+            <tr>
+                <th scope="col">Discount Amount</th>
+                <th scope="col">Cost</th>
+                <th scope="col">Purchase</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>$1.00</td>
+                <td>20 Points</td>
+                <td><button>Purchase</button></td>
+            </tr>
+            <tr>
+                <td>$2.00</td>
+                <td>40 Points</td>
+                <td><button>Purchase</button></td>
+            </tr>
+            <tr>
+                <td>$3.00</td>
+                <td>60 Points</td>
+                <td><button>Purchase</button></td>
+            </tr>
+            <tr>
+                <td>$4.00</td>
+                <td>80 Points</td>
+                <td><button disabled>Insufficient Points</button></td>
+            </tr>
+            <tr>
+                <td>$5.00</td>
+                <td>100 Points</td>
+                <td><button disabled>Insufficient Points</button></td>
+            </tr>
+            <tr>
+                <td>$8.00</td>
+                <td>120 Points</td>
+                <td><button disabled>Insufficient Points</button></td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

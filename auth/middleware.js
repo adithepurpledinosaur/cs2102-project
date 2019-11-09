@@ -3,7 +3,7 @@ function authMiddleware () {
     if (req.isAuthenticated()) {
       return next()
     }
-    res.redirect('/login?login=authwalled')
+    res.redirect('/login?msg=please%20login%20first')
   }
 }
 
