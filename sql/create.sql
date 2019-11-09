@@ -54,24 +54,27 @@ CREATE TABLE Passenger (
 CREATE TABLE Car (
 	uname varchar(15) REFERENCES Driver
 		ON DELETE CASCADE,
-	plate_num integer UNIQUE,				/* Plate number: Assuming all integers (eg. 1234, 1111, 0000) */
+	plate_num varchar(8) UNIQUE,				/* Plate number: Assuming all integers (eg. 1234, 1111, 0000) */
 	num_seats integer,			 					/* Maximum capacity of the car, excluding driver */
 	model varchar(7) NOT NULL,
 	edate date NOT NULL,							/* End date of COE */
 	PRIMARY KEY (uname, plate_num),
 	CHECK (num_seats > 0),							/* Check if the mcap is valid */
 	CHECK (											/* Check if the COE expiry: */
-			date_part(								/* Minimum 1 year before expiry to register */
+			date_part(								/* Min 1 year before expiry to register */
 						'day',
 					 	(now()::timestamp - edate::timestamp)
 					 )
 			>= 365
+		  ),
+	CHECK (											/* Check if plate_num is valid */
+			plate_num SIMILAR TO '[A-Z]{2,3}[0-9][1-9]{0,3}[A-Z]'
 		  )
 );
 
 CREATE TABLE Ride (
 	uname varchar(15),
-	plate_num integer,
+	plate_num varchar(8),
 	pmax integer,									/* Maximum passengers driver accepts*/
 	origin varchar(20),								/* Place to pick passenger up */
 	dest varchar(20),								/* Destination: Place to drop passenger off */
@@ -143,13 +146,12 @@ CREATE TABLE Obtains (								/* Passenger has... */
 		),
 	redeemed boolean DEFAULT FALSE,				/* States if the discount has been redeemed */
 	PRIMARY KEY (uname, rcode, expdate),
-	CHECK (expdate - interval '3 months' >= current_timestamp)			/* Check if the timestamp is valid */
 );
 
 CREATE TABLE Bid (
 	puname varchar(15),
 	duname varchar(15),
-	plate_num integer,
+	plate_num varchar(8),
 	origin varchar(20),
 	dest varchar(20),
 	ptime time,
@@ -164,8 +166,12 @@ CREATE TABLE Bid (
 		REFERENCES Ride (uname, plate_num, origin, dest, ptime, pdate)
 		ON DELETE CASCADE,
 	PRIMARY KEY (puname, duname, plate_num, origin, dest, ptime, pdate),
-	CHECK ((pdate = current_date AND ptime > current_time + INTERVAL '1 hour') OR pdate > current_date), /* Check that time passenger bids is 1hr before ride */
-	CHECK (puname <> duname),						/* Make sures that the passenger and driver are not the same person */
+	CHECK (											/* Check that bids is 1hr before ride */
+			(pdate = current_date AND ptime > current_time + INTERVAL '1 hour')
+			OR
+			pdate > current_date
+		  ),
+	CHECK (puname <> duname),						/* Not the same person */
 	CHECK (price > 0)								/* Checks if the price is valid */
 );
 /*---------------------------- 		TRANSACTION PART		 ----------------------------------------*/
@@ -173,15 +179,13 @@ CREATE TABLE Bid (
 
 
 CREATE TABLE Transactions (
-	--tcode varchar(7) PRIMARY KEY,
 	puname varchar(15),
 	duname varchar(15),
-	plate_num integer,
+	plate_num varchar(8),
 	origin varchar(20),
 	dest varchar(20),
 	ptime time,
 	pdate date,
-	--r_issue char(7),
 	r_redeem char (7) DEFAULT NULL,
 	oprice integer,									/* AMount received by Driver */
 	tprice integer,									/* Total price Passenger paid */
@@ -191,8 +195,6 @@ CREATE TABLE Transactions (
 	closed boolean DEFAULT FALSE,
 	FOREIGN KEY (puname)
 		REFERENCES Passenger (uname),
-	-- FOREIGN KEY (r_issue)
-	-- 	REFERENCES Reward (rcode),
 	FOREIGN KEY (r_redeem)
 		REFERENCES Reward (rcode),
 	FOREIGN KEY (duname, plate_num, origin, dest, ptime, pdate)
