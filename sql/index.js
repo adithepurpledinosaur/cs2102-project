@@ -9,6 +9,8 @@ sql.query = {
 
     create_driver: 'INSERT INTO Driver VALUES ($1, DEFAULT)',
     create_passenger: 'INSERT INTO Passenger VALUES ($1, DEFAULT, DEFAULT, DEFAULT, DEFAULT)',
+
+    create_car: 'INSERT INTO Car VALUES ($1, $2, $3, $4, $5)',
 }
 
 module.exports = sql
