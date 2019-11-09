@@ -32,7 +32,7 @@ CREATE TABLE Driver (
 CREATE TABLE Passenger (
 	uname varchar(15) PRIMARY KEY REFERENCES Users
 		ON DELETE CASCADE,
-	mstatus varchar(10) DEFAULT 'Member',			/* Membership status */
+	mstatus varchar(10) DEFAULT 'MEMBER',			/* Membership status */
 	tpoints integer DEFAULT 0,					/* Total accumalated reward points (upon joining: all members enjoy 100 points free) */
     cpoints integer DEFAULT 0,                    /* Current points user has after using points for Discount */
 	rating numeric (3,2) DEFAULT 5.00,				/* Default Passenger rating */
@@ -55,7 +55,7 @@ CREATE TABLE Car (
 	uname varchar(15) REFERENCES Driver
 		ON DELETE CASCADE,
 	plate_num integer UNIQUE,				/* Plate number: Assuming all integers (eg. 1234, 1111, 0000) */
-	num_seats integer,			 					/* Maximum capacity of the car, excluding driver */
+	num_seats integer NOT NULL,	 					/* Maximum capacity of the car, excluding driver */
 	model varchar(7) NOT NULL,
 	edate date NOT NULL,							/* End date of COE */
 	PRIMARY KEY (uname, plate_num),
@@ -63,7 +63,7 @@ CREATE TABLE Car (
 	CHECK (											/* Check if the COE expiry: */
 			date_part(								/* Minimum 1 year before expiry to register */
 						'day',
-					 	(now()::timestamp - edate::timestamp)
+					 	(edate::timestamp - now()::timestamp)
 					 )
 			>= 365
 		  )
