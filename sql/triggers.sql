@@ -1,6 +1,8 @@
 
 --------------------------- TRIGGER FUNCTIONS --------------------------------------
 
+
+-------------------------------------Trigger on Users------------------------------------------
 --All User will be added as a passenger--
 
 DROP FUNCTION IF EXISTS update_passenger() CASCADE;
@@ -19,6 +21,12 @@ AFTER INSERT ON Users
 FOR EACH ROW 
 EXECUTE PROCEDURE update_passenger();
 
+
+
+
+
+-------------------------------------Trigger on Passengers------------------------------------------
+
 ----Initial points upon sign-up----
 DROP FUNCTION IF EXISTS award_points() CASCADE;
 CREATE OR REPLACE FUNCTION award_points()
@@ -29,6 +37,7 @@ BEGIN
 	INSERT INTO Obtains VALUES (NEW.uname, 'R000001', DEFAULT, DEFAULT);
 
 	UPDATE Passenger P SET tpoints = tpoints + 50 WHERE P.uname = NEW.uname;
+	UPDATE Passenger P SET cpoints = cpoints + 50 WHERE P.uname = NEW.uname;
 	RAISE NOTICE 'Sign-Up points awarded';
 	RETURN NULL;
 END;
@@ -39,9 +48,6 @@ AFTER INSERT ON Passenger
 FOR EACH ROW 
 EXECUTE PROCEDURE award_points();
 
-
---query check: UPDATE Passenger Set tpoints = tpoints + 200 WHERE uname = 'God';--
-----------------------------
 
 ----Upgrade of Membership----
 DROP FUNCTION IF EXISTS upgrade_mship() CASCADE;
@@ -66,8 +72,11 @@ FOR EACH ROW WHEN (NEW.tpoints >= 200)
 EXECUTE PROCEDURE upgrade_mship();
 
 
---query check: UPDATE Passenger Set tpoints = tpoints + 200 WHERE uname = 'God';--
-----------------------------
+
+
+
+
+-------------------------------------Trigger on Bid------------------------------------------
 
 ----When Customer bids for car, update curr_pax----
 DROP FUNCTION IF EXISTS update_pax() CASCADE;
@@ -86,9 +95,86 @@ CREATE TRIGGER check_bid
 AFTER INSERT ON Bid
 FOR EACH ROW
 EXECUTE PROCEDURE update_pax();
-------------------------------------------------
+
+----Trigger to check that bid price > ride's min_cost----
+
+DROP FUNCTION IF EXISTS check_bid() CASCADE;
+CREATE OR REPLACE FUNCTION check_bid()
+RETURNS TRIGGER AS 
+$$ DECLARE mincost integer;
+BEGIN 
+	SELECT min_cost INTO mincost
+	FROM Ride R WHERE
+	NEW.duname = R.uname 
+	AND NEW.plate_num = R.plate_num
+	AND NEW.origin = R.origin
+	AND NEW.dest = R.dest
+	AND NEW.pdatetime = R.pdatetime;
+	
+	IF NEW.price < mincost THEN
+		RAISE NOTICE 'Bid too low!';
+		RETURN NULL;
+	ELSE 
+		RAISE NOTICE 'Checked Bid Price';
+		RETURN NEW;
+	END IF;	
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER bid_placed
+BEFORE INSERT ON Bid
+FOR EACH ROW 
+EXECUTE PROCEDURE check_bid();
+
+----Trigger to update btime on update on Bid----
+
+DROP FUNCTION IF EXISTS update_btime() CASCADE;
+CREATE OR REPLACE FUNCTION update_btime()
+RETURNS TRIGGER AS 
+$$ 
+BEGIN  
+
+		UPDATE Bid SET btime = current_time WHERE
+		puname = NEW.puname
+		AND duname = NEW.duname
+		AND plate_num = NEW.plate_num
+		AND origin = NEW.origin
+		AND dest = NEW.dest
+		AND pdatetime = NEW.pdatetime;
+		RAISE NOTICE 'btime updated';
+		RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER price_update
+AFTER UPDATE of price ON Bid
+FOR EACH ROW 
+EXECUTE PROCEDURE update_btime();
 
 
+--open transaction--
+DROP FUNCTION IF EXISTS open_transaction() CASCADE;
+CREATE OR REPLACE FUNCTION open_transaction()
+RETURNS TRIGGER AS 
+$$ 
+BEGIN  
+	INSERT INTO Transactions VALUES (NEW.puname, NEW.duname, NEW.plate_num, NEW.origin, NEW.dest, NEW.pdatetime, DEFAULT, NEW.price, NEW.price, NULL, NULL, NULL, DEFAULT);
+	RAISE NOTICE 'Transaction Opened';
+	RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER bid_won
+AFTER UPDATE of won ON Bid 
+FOR EACH ROW WHEN (NEW.won = TRUE)
+EXECUTE PROCEDURE open_transaction();
+
+
+
+
+
+
+-------------------------------------Trigger on Ride------------------------------------------
 
 ----Check pmax <= num_seats when Drivers advertise Ride----
 DROP FUNCTION IF EXISTS reject_ride() CASCADE;
@@ -125,12 +211,12 @@ CREATE OR REPLACE FUNCTION remove_ride()
 RETURNS TRIGGER AS 
 $$ DECLARE 
 BEGIN 
-
-        IF (
+	
+        IF EXISTS (
             SELECT 1 FROM Ride R
             WHERE NEW.uname = R.uname
-            AND (NEW.pdatetime - INTERVAL '1 hour' <= R.pdatetime
-              OR NEW.pdatetime + INTERVAL '1 hour' >= R.pdatetime)
+            AND ((NEW.pdatetime > R.pdatetime AND NEW.pdatetime - INTERVAL '1 hour' <= R.pdatetime)
+              OR (NEW.pdatetime < R.pdatetime AND NEW.pdatetime + INTERVAL '1 hour' >= R.pdatetime))
             LIMIT 1
         ) THEN
 		RAISE NOTICE 'Ride Timing Violation';
@@ -147,60 +233,54 @@ BEFORE INSERT ON Ride
 FOR EACH ROW 
 EXECUTE PROCEDURE remove_ride();
 
-----Trigger to check that bid price > ride's min_cost----
 
-	DROP FUNCTION IF EXISTS check_bid() CASCADE;
-	CREATE OR REPLACE FUNCTION check_bid()
-	RETURNS TRIGGER AS 
-	$$ DECLARE mincost integer;
-	BEGIN 
-		SELECT min_cost INTO mincost
-		FROM Ride R WHERE
-		NEW.duname = R.uname 
-		AND NEW.plate_num = R.plate_num
-		AND NEW.origin = R.origin
-		AND NEW.dest = R.dest
-		AND NEW.pdatetime = R.pdatetime;
-		
-		IF NEW.price < mincost THEN
-			RAISE NOTICE 'Bid too low!';
-			RETURN NULL;
-		ELSE 
-			RAISE NOTICE 'Checked Bid Price';
-			RETURN NEW;
-		END IF;	
-	END;
-	$$ LANGUAGE plpgsql;
 
-	CREATE TRIGGER bid_placed
-	BEFORE INSERT ON Bid
-	FOR EACH ROW 
-	EXECUTE PROCEDURE check_bid();
 
-----Trigger to update btime on update on Bid----
 
-DROP FUNCTION IF EXISTS update_btime() CASCADE;
-CREATE OR REPLACE FUNCTION update_btime()
+
+
+
+
+
+
+-------------------------------------Trigger on Obtains------------------------------------------
+
+----Trigger to deduct cpoints when Passenger obtains discount----
+
+DROP FUNCTION IF EXISTS deduct_cpoints() CASCADE;
+CREATE OR REPLACE FUNCTION deduct_cpoints()
 RETURNS TRIGGER AS 
-$$ 
+$$ DECLARE dcost integer;
 BEGIN  
 
-		UPDATE Bid SET btime = current_time WHERE
-		puname = NEW.puname
-		AND duname = NEW.duname
-		AND plate_num = NEW.plate_num
-		AND origin = NEW.origin
-		AND dest = NEW.dest
-		AND pdatetime = NEW.pdatetime;
-		RAISE NOTICE 'btime updated';
-		RETURN NEW;
+	SELECT cost INTO dcost 
+	FROM Discount D  
+	WHERE NEW.rcode = D.rcode;
+	
+	UPDATE Passenger
+	SET cpoints = cpoints - dcost
+	WHERE uname = NEW.uname;
+	RAISE NOTICE 'Discount code bought';
+	RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER price_update
-AFTER UPDATE of price ON Bid
-FOR EACH ROW 
-EXECUTE PROCEDURE update_btime();
+CREATE TRIGGER deduct_cpoints
+AFTER INSERT ON Obtains 
+FOR EACH ROW WHEN (NEW.rcode LIKE 'D%')	
+EXECUTE PROCEDURE deduct_cpoints();
+
+
+
+
+
+
+
+
+
+
+
+-------------------------------------Trigger on Transactions------------------------------------------
 
 ----Trigger to update dtime on update on closure of Transaction---
 DROP FUNCTION IF EXISTS update_dtime() CASCADE;
@@ -220,34 +300,44 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER trip_closed
-AFTER UPDATE ON Transactions 
+AFTER UPDATE of closed ON Transactions 
 FOR EACH ROW WHEN (NEW.closed = TRUE)
 EXECUTE PROCEDURE update_dtime();
 
--- these are not just mock data because the triggers require these relations added to function
-INSERT INTO Reward VALUES ('R000001', DEFAULT);
-INSERT INTO Reward VALUES ('R000002', DEFAULT);
-INSERT INTO Points VALUES ('R000001', 50);
-INSERT INTO Points VALUES ('R000002', 5);
-INSERT INTO Benefits VALUES ('B000001', 1);
+-- -- these are not just mock data because the triggers require these relations added to function
+-- INSERT INTO Reward VALUES ('R000001', DEFAULT);
+-- INSERT INTO Reward VALUES ('R000002', DEFAULT);
+-- INSERT INTO Points VALUES ('R000001', 50);
+-- INSERT INTO Points VALUES ('R000002', 5);
+-- INSERT INTO Benefits VALUES ('B000001', 1);
 
 --Trigger to add to tpoints, every 5 dollars = 10 points--
 DROP FUNCTION IF EXISTS issue_points() CASCADE;
 CREATE OR REPLACE FUNCTION issue_points()
 RETURNS TRIGGER AS
 $$ DECLARE price integer;
+currtime TIMESTAMP;
 BEGIN
-	
-	SET NEW.tprice TO price; 
-	WHILE price >= 5 LOOP
-		INSERT INTO Obtains VALUES (NEW.puname, 'R000002', DEFAULT, DEFAULT);
-		price := price - 5;
+	SELECT CURRENT_TIMESTAMP INTO currtime;
 
-		UPDATE Passenger P SET P.tpoints = P.tpoints + 5 
-		WHERE P.uname = NEW.puname;
+	SELECT tprice INTO price
+	FROM Transactions T
+	WHERE puname = NEW.puname
+	AND duname = NEW.duname  
+	AND plate_num = NEW.plate_num
+	AND origin = NEW.origin
+	AND dest = NEW.dest
+	AND pdatetime = NEW.pdatetime;
+
+	WHILE price >= 5 LOOP
+		INSERT INTO Obtains VALUES (NEW.puname, 'R000002', currtime, DEFAULT);
+		price := price - 5;
+		currtime := currtime + INTERVAL '1 second';
+		UPDATE Passenger SET tpoints = tpoints + 5 
+		WHERE uname = NEW.puname;
 		
-		UPDATE Passenger P SET P.cpoints = P.cpoints + 5 
-		WHERE P.uname = NEW.puname;
+		UPDATE Passenger SET cpoints = cpoints + 5 
+		WHERE uname = NEW.puname;
 	END LOOP; 
 	RAISE NOTICE 'Points for ride issued';
 	RETURN NULL;
@@ -288,16 +378,15 @@ BEGIN
 	SELECT O.redeemed INTO redeem_status
 	FROM Obtains O 
 	WHERE NEW.puname = O.uname
-	AND NEW.r_redeem = O.rcode;
+	AND NEW.r_redeem = O.rcode
+	ORDER BY redeemed ASC;
 	
 	IF redeem_status = TRUE
-	OR exp_date >= CURRENT_TIMESTAMP THEN
+	OR exp_date <= CURRENT_TIMESTAMP THEN
 		RAISE NOTICE 'Expired discount';
 		RETURN NULL;
 	ELSE	
-		UPDATE Passenger SET cpoints = cpoints - disc_cost 
-		WHERE uname = NEW.puname;
-		RAISE NOTICE 'Discount Redeemed';
+		RAISE NOTICE 'Discount Valid';
 		RETURN NEW;
 	END IF;
 
@@ -316,20 +405,17 @@ CREATE OR REPLACE FUNCTION update_price()
 RETURNS TRIGGER AS 
 $$ DECLARE 
 	disc integer;
-	dcost integer;
 BEGIN  
 	SELECT amt INTO disc 
 	FROM Discount D  
 	WHERE NEW.r_redeem = D.rcode;
 
-	SELECT cost INTO dcost 
-	FROM Discount D  
-	WHERE NEW.r_redeem = D.rcode;
 	
 	UPDATE Obtains
 	SET redeemed = TRUE 
 	WHERE uname = NEW.puname 
 	AND rcode = NEW.r_redeem;
+
 
 	UPDATE Transactions 
 	SET tprice = tprice - disc
@@ -340,8 +426,6 @@ BEGIN
 	AND dest = NEW.dest
 	AND pdatetime = NEW.pdatetime;
 
-	UPDATE Passenger P
-	SET P.cpoints = P.cpoints - dcost;
 	RAISE NOTICE 'Discount applied';
 
 	RETURN NEW;
@@ -359,15 +443,15 @@ DROP FUNCTION IF EXISTS update_prating() CASCADE;
 CREATE OR REPLACE FUNCTION update_prating()
 RETURNS TRIGGER AS 
 $$ DECLARE 
-	newrating integer;
+	newrating numeric(3,2);
 BEGIN  
 	SELECT avg(prating) INTO newrating 
 	FROM Transactions T  
 	WHERE T.puname = NEW.puname;
 
-	UPDATE Passenger P
-	SET P.rating = newrating 
-	WHERE NEW.puname = P.uname;
+	UPDATE Passenger 
+	SET rating = newrating 
+	WHERE uname = NEW.puname;
 	RAISE NOTICE 'New average prating';
 	RETURN NEW;
 END;
@@ -375,7 +459,7 @@ $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER prating_added
 AFTER UPDATE OF prating ON Transactions 
-FOR EACH ROW WHEN (NEW.prating <> NULL)
+FOR EACH ROW
 EXECUTE PROCEDURE update_prating();
 
 
@@ -385,15 +469,15 @@ DROP FUNCTION IF EXISTS update_drating() CASCADE;
 CREATE OR REPLACE FUNCTION update_drating()
 RETURNS TRIGGER AS 
 $$ DECLARE 
-	newrating integer;
+	newrating numeric(3,2);
 BEGIN  
 	SELECT avg(drating) INTO newrating 
 	FROM Transactions T  
 	WHERE T.duname = NEW.duname;
 
-	UPDATE Driver D
-	SET D.rating = newrating 
-	WHERE NEW.duname = D.uname;
+	UPDATE Driver 
+	SET rating = newrating 
+	WHERE uname = NEW.duname;
 	RAISE NOTICE 'New average drating';
 	RETURN NEW;
 END;
@@ -401,7 +485,7 @@ $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER drating_added
 AFTER UPDATE OF drating ON Transactions 
-FOR EACH ROW WHEN (NEW.drating <> NULL)
+FOR EACH ROW
 EXECUTE PROCEDURE update_drating();
 
 --Driver obtains benefit every rides--
@@ -418,26 +502,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER d_ride
-AFTER UPDATE ON Transactions 
+AFTER UPDATE of closed ON Transactions 
 FOR EACH ROW WHEN (NEW.closed = TRUE)
 EXECUTE PROCEDURE issue_benefit();
 
---revisit driver benefits-- 
----------------------------
-
---open transaction--
-DROP FUNCTION IF EXISTS open_transaction() CASCADE;
-CREATE OR REPLACE FUNCTION open_transaction()
-RETURNS TRIGGER AS 
-$$ 
-BEGIN  
-	INSERT INTO Transactions VALUES (NEW.puname, NEW.duname, NEW.plate_num, NEW.origin, NEW.dest, NEW.pdatetime, DEFAULT, NEW.price, NEW.price, NULL, NULL, NULL, DEFAULT);
-	RAISE NOTICE 'Transaction Opened';
-	RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER bid_won
-AFTER UPDATE of won ON Bid 
-FOR EACH ROW WHEN (NEW.won = TRUE)
-EXECUTE PROCEDURE open_transaction();
