@@ -51,6 +51,26 @@ function initRouter(app) {
     app.get('/rewards', passport.authMiddleware(), show_rewards);
     app.get('/benefits', passport.authMiddleware(), show_benefits);
 
+    app.post('/updatebid', passport.authMiddleware(), update_bid);
+}
+
+function update_bid(req, res, next) {
+    if (!['price', 'uname', 'plate_num', 'origin', 'dest', 'pdatetime'].every(x => req.body[x])) {
+        return res.redirect(withMsg("/rides", "bad request"));
+    }
+    const bid_amount = req.body.price;
+    if (bid_amount == 0) {
+        pool.query(sql_query.query.delete_bid, [req.user.username, req.body.uname, req.body.plate_num, req.body.origin, req.body.dest, req.body.pdatetime])
+            .then(() => res.redirect(withMsg("/rides", "bid retracted")))
+            .catch(() => res.redirect(withMsg("/rides", "cannot retract bid, was it there? too late?")));
+    } else {
+        pool.query(sql_query.query.upsert_bid, [req.user.username, req.body.uname, req.body.plate_num, req.body.origin, req.body.dest, req.body.pdatetime, bid_amount])
+            .then(data => {
+                if (data.rowCount != 1) { throw new Error("not inserted"); }
+                res.redirect(withMsg("/rides", "bid updated"))
+            })
+            .catch(() => res.redirect(withMsg("/rides", "cannot update bid, too low or too late?")));
+    }
 }
 
 const show_rewards = (req, res, next) =>
@@ -72,7 +92,7 @@ const show_rideadmin = (req, res, next) =>
 
 const get_rides = (req, res, next) =>
     pool.query(sql_query.query.get_rides, [req.user.username, `%${req.query['search'] || ''}%`])
-        .then(data => render(req, res, 'rides', {rows: data.rows}));
+        .then(data => render(req, res, 'rides', {rows: data.rows, search: req.query['search']}));
 
 function do_addride(req, res, next) {
     pool.query(sql_query.query.create_ride, [req.user.username, req.query.plate_num, req.body.pmax, req.body.origin, req.body.dest, req.body.date + ' ' + req.body.time, req.body.dtime || null, req.body.min_cost])
