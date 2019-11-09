@@ -5,7 +5,7 @@
 -------------------------------------Trigger on Users------------------------------------------
 --All User will be added as a passenger--
 
-DROP FUNCTION update_passenger() CASCADE;
+DROP FUNCTION IF EXISTS update_passenger() CASCADE;
 CREATE OR REPLACE FUNCTION update_passenger()
 RETURNS TRIGGER AS 
 $$ 
@@ -28,7 +28,7 @@ EXECUTE PROCEDURE update_passenger();
 -------------------------------------Trigger on Passengers------------------------------------------
 
 ----Initial points upon sign-up----
-DROP FUNCTION award_points() CASCADE;
+DROP FUNCTION IF EXISTS award_points() CASCADE;
 CREATE OR REPLACE FUNCTION award_points()
 RETURNS TRIGGER AS 
 $$ DECLARE newuname varchar(15);
@@ -50,7 +50,7 @@ EXECUTE PROCEDURE award_points();
 
 
 ----Upgrade of Membership----
-DROP FUNCTION upgrade_mship() CASCADE;
+DROP FUNCTION IF EXISTS upgrade_mship() CASCADE;
 CREATE OR REPLACE FUNCTION upgrade_mship()
 RETURNS TRIGGER AS 
 $$ DECLARE newuname varchar(15);
@@ -79,7 +79,7 @@ EXECUTE PROCEDURE upgrade_mship();
 -------------------------------------Trigger on Bid------------------------------------------
 
 ----When Customer bids for car, update curr_pax----
-DROP FUNCTION update_pax() CASCADE;
+DROP FUNCTION IF EXISTS update_pax() CASCADE;
 CREATE OR REPLACE FUNCTION update_pax()
 RETURNS TRIGGER AS 
 $$ DECLARE newuname1 varchar(15);
@@ -98,7 +98,7 @@ EXECUTE PROCEDURE update_pax();
 
 ----Trigger to check that bid price > ride's min_cost----
 
-DROP FUNCTION check_bid() CASCADE;
+DROP FUNCTION IF EXISTS check_bid() CASCADE;
 CREATE OR REPLACE FUNCTION check_bid()
 RETURNS TRIGGER AS 
 $$ DECLARE mincost integer;
@@ -109,8 +109,7 @@ BEGIN
 	AND NEW.plate_num = R.plate_num
 	AND NEW.origin = R.origin
 	AND NEW.dest = R.dest
-	AND NEW.ptime = R.ptime
-	AND NEW.pdate = R.pdate;
+	AND NEW.pdatetime = R.pdatetime;
 	
 	IF NEW.price < mincost THEN
 		RAISE NOTICE 'Bid too low!';
@@ -129,7 +128,7 @@ EXECUTE PROCEDURE check_bid();
 
 ----Trigger to update btime on update on Bid----
 
-DROP FUNCTION update_btime() CASCADE;
+DROP FUNCTION IF EXISTS update_btime() CASCADE;
 CREATE OR REPLACE FUNCTION update_btime()
 RETURNS TRIGGER AS 
 $$ 
@@ -141,8 +140,7 @@ BEGIN
 		AND plate_num = NEW.plate_num
 		AND origin = NEW.origin
 		AND dest = NEW.dest
-		AND ptime = NEW.ptime
-		AND pdate = NEW.pdate;
+		AND pdatetime = NEW.pdatetime;
 		RAISE NOTICE 'btime updated';
 		RETURN NEW;
 END;
@@ -155,12 +153,12 @@ EXECUTE PROCEDURE update_btime();
 
 
 --open transaction--
-DROP FUNCTION open_transaction() CASCADE;
+DROP FUNCTION IF EXISTS open_transaction() CASCADE;
 CREATE OR REPLACE FUNCTION open_transaction()
 RETURNS TRIGGER AS 
 $$ 
 BEGIN  
-	INSERT INTO Transactions VALUES (NEW.puname, NEW.duname, NEW.plate_num, NEW.origin, NEW.dest, NEW.ptime, NEW.pdate, DEFAULT, NEW.price, NEW.price, NULL, NULL, NULL, DEFAULT);
+	INSERT INTO Transactions VALUES (NEW.puname, NEW.duname, NEW.plate_num, NEW.origin, NEW.dest, NEW.pdatetime, DEFAULT, NEW.price, NEW.price, NULL, NULL, NULL, DEFAULT);
 	RAISE NOTICE 'Transaction Opened';
 	RETURN NEW;
 END;
@@ -179,7 +177,7 @@ EXECUTE PROCEDURE open_transaction();
 -------------------------------------Trigger on Ride------------------------------------------
 
 ----Check pmax <= num_seats when Drivers advertise Ride----
-DROP FUNCTION reject_ride() CASCADE;
+DROP FUNCTION IF EXISTS reject_ride() CASCADE;
 CREATE OR REPLACE FUNCTION reject_ride()
 RETURNS TRIGGER AS 
 $$ DECLARE numseats integer;
@@ -208,19 +206,19 @@ EXECUTE PROCEDURE reject_ride();
 
 
 ----Trigger to check driver dont add ride 1hr within another ride----
-DROP FUNCTION remove_ride() CASCADE;
+DROP FUNCTION IF EXISTS remove_ride() CASCADE;
 CREATE OR REPLACE FUNCTION remove_ride()
 RETURNS TRIGGER AS 
 $$ DECLARE 
-	oldptime time;
+	oldptime timestamp;
 BEGIN 
 
-	SELECT R.ptime INTO oldptime
+	SELECT R.pdatetime INTO oldptime
 	FROM Ride R
 	WHERE NEW.uname = R.uname
-	AND NEW.pdate = R.pdate;
+	AND NEW.pdatetime::date = R.pdatetime::date;
 
-	IF oldptime + INTERVAL '1 hour' >= NEW.ptime THEN
+	IF oldptime + INTERVAL '1 hour' >= NEW.pdatetime THEN
 		RAISE NOTICE 'Ride Timing Violation';
 		RETURN NULL;
 	ELSE 
@@ -238,10 +236,54 @@ EXECUTE PROCEDURE remove_ride();
 
 
 
+
+
+
+
+
+
+
+-------------------------------------Trigger on Obtains------------------------------------------
+
+----Trigger to deduct cpoints when Passenger obtains discount----
+
+DROP FUNCTION IF EXISTS deduct_cpoints() CASCADE;
+CREATE OR REPLACE FUNCTION deduct_cpoints()
+RETURNS TRIGGER AS 
+$$ DECLARE dcost integer;
+BEGIN  
+
+	SELECT cost INTO dcost 
+	FROM Discount D  
+	WHERE NEW.rcode = D.rcode;
+	
+	UPDATE Passenger
+	SET cpoints = cpoints - dcost
+	WHERE uname = NEW.uname;
+	RAISE NOTICE 'Discount code bought';
+	RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER deduct_cpoints
+AFTER INSERT ON Obtains 
+FOR EACH ROW WHEN (NEW.rcode LIKE 'D%')	
+EXECUTE PROCEDURE deduct_cpoints();
+
+
+
+
+
+
+
+
+
+
+
 -------------------------------------Trigger on Transactions------------------------------------------
 
 ----Trigger to update dtime on update on closure of Transaction---
-DROP FUNCTION update_dtime() CASCADE;
+DROP FUNCTION IF EXISTS update_dtime() CASCADE;
 CREATE OR REPLACE FUNCTION update_dtime()
 RETURNS TRIGGER AS 
 $$ 
@@ -251,8 +293,7 @@ BEGIN
 	AND plate_num = NEW.plate_num
 	AND origin = NEW.origin
 	AND dest = NEW.dest
-	AND ptime = NEW.ptime
-	AND pdate = NEW.pdate;
+	AND pdatetime = NEW.pdatetime;
 	RAISE NOTICE 'Drop time updated';
 	RETURN NEW;
 END;
@@ -264,7 +305,7 @@ FOR EACH ROW WHEN (NEW.closed = TRUE)
 EXECUTE PROCEDURE update_dtime();
 
 --Trigger to add to tpoints, every 5 dollars = 10 points--
-DROP FUNCTION issue_points() CASCADE;
+DROP FUNCTION IF EXISTS issue_points() CASCADE;
 CREATE OR REPLACE FUNCTION issue_points()
 RETURNS TRIGGER AS
 $$ DECLARE price integer;
@@ -279,8 +320,7 @@ BEGIN
 	AND plate_num = NEW.plate_num
 	AND origin = NEW.origin
 	AND dest = NEW.dest
-	AND ptime = NEW.ptime
-	AND pdate = NEW.pdate;
+	AND pdatetime = NEW.pdatetime;
 
 	WHILE price >= 5 LOOP
 		INSERT INTO Obtains VALUES (NEW.puname, 'R000002', currtime, DEFAULT);
@@ -310,7 +350,7 @@ EXECUTE PROCEDURE issue_points();
 
 
 --Trigger to check redeem status
-DROP FUNCTION check_redeem() CASCADE;
+DROP FUNCTION IF EXISTS check_redeem() CASCADE;
 CREATE OR REPLACE FUNCTION check_redeem()
 RETURNS TRIGGER AS 
 $$ DECLARE 
@@ -331,10 +371,11 @@ BEGIN
 	SELECT O.redeemed INTO redeem_status
 	FROM Obtains O 
 	WHERE NEW.puname = O.uname
-	AND NEW.r_redeem = O.rcode;
+	AND NEW.r_redeem = O.rcode
+	ORDER BY redeemed ASC;
 	
 	IF redeem_status = TRUE
-	OR exp_date >= CURRENT_TIMESTAMP THEN
+	OR exp_date <= CURRENT_TIMESTAMP THEN
 		RAISE NOTICE 'Expired discount';
 		RETURN NULL;
 	ELSE	
@@ -352,25 +393,22 @@ EXECUTE PROCEDURE check_redeem();
 ----------------------------------------
 
 --Trigger to change tprice with discount
-DROP FUNCTION update_price() CASCADE;
+DROP FUNCTION IF EXISTS update_price() CASCADE;
 CREATE OR REPLACE FUNCTION update_price()
 RETURNS TRIGGER AS 
 $$ DECLARE 
 	disc integer;
-	dcost integer;
 BEGIN  
 	SELECT amt INTO disc 
 	FROM Discount D  
 	WHERE NEW.r_redeem = D.rcode;
 
-	SELECT cost INTO dcost 
-	FROM Discount D  
-	WHERE NEW.r_redeem = D.rcode;
 	
 	UPDATE Obtains
 	SET redeemed = TRUE 
 	WHERE uname = NEW.puname 
 	AND rcode = NEW.r_redeem;
+
 
 	UPDATE Transactions 
 	SET tprice = tprice - disc
@@ -379,13 +417,7 @@ BEGIN
 	AND plate_num = NEW.plate_num
 	AND origin = NEW.origin
 	AND dest = NEW.dest
-	AND ptime = NEW.ptime
-	AND pdate = NEW.pdate;
-
-	UPDATE Passenger
-	SET cpoints = cpoints - dcost
-	WHERE uname = NEW.puname;
-	RAISE NOTICE 'Discount applied';
+	AND pdatetime = NEW.pdatetime;
 
 	RETURN NEW;
 END;
@@ -398,11 +430,11 @@ EXECUTE PROCEDURE update_price();
 
 --Average prating upon transaction--
 
-DROP FUNCTION update_prating() CASCADE;
+DROP FUNCTION IF EXISTS update_prating() CASCADE;
 CREATE OR REPLACE FUNCTION update_prating()
 RETURNS TRIGGER AS 
 $$ DECLARE 
-	newrating integer;
+	newrating numeric(3,2);
 BEGIN  
 	SELECT avg(prating) INTO newrating 
 	FROM Transactions T  
@@ -424,11 +456,11 @@ EXECUTE PROCEDURE update_prating();
 
 --Average drating upon transaction--
 
-DROP FUNCTION update_drating() CASCADE;
+DROP FUNCTION IF EXISTS update_drating() CASCADE;
 CREATE OR REPLACE FUNCTION update_drating()
 RETURNS TRIGGER AS 
 $$ DECLARE 
-	newrating integer;
+	newrating numeric(3,2);
 BEGIN  
 	SELECT avg(drating) INTO newrating 
 	FROM Transactions T  
@@ -449,7 +481,7 @@ EXECUTE PROCEDURE update_drating();
 
 --Driver obtains benefit every rides--
 
-DROP FUNCTION issue_benefit() CASCADE;
+DROP FUNCTION IF EXISTS issue_benefit() CASCADE;
 CREATE OR REPLACE FUNCTION issue_benefit()
 RETURNS TRIGGER AS 
 $$

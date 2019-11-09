@@ -14,8 +14,8 @@ CREATE TABLE Users (
 	CHECK (cdate >= current_date),					/* Check if date is valid */
 	CHECK (date_part('year', age(dob)) >= 16),		/* Check if user is 16 y/o and above */
     CHECK (                                         /* Check gender */
-            UPPER(gender) = 'M'
-            OR UPPER(gender) = 'F'
+            gender = 'M'
+            OR gender = 'F'
           )   
 );
 
@@ -32,7 +32,7 @@ CREATE TABLE Driver (
 CREATE TABLE Passenger (
 	uname varchar(15) PRIMARY KEY REFERENCES Users
 		ON DELETE CASCADE,
-	mstatus varchar(10) DEFAULT 'Member',			/* Membership status */
+	mstatus varchar(10) DEFAULT 'MEMBER',			/* Membership status */
 	tpoints integer DEFAULT 0,					/* Total accumalated reward points (upon joining: all members enjoy 100 points free) */
     cpoints integer DEFAULT 0,                    /* Current points user has after using points for Discount */
 	rating numeric (3,2) DEFAULT 5.00,				/* Default Passenger rating */
@@ -43,9 +43,9 @@ CREATE TABLE Passenger (
 	CHECK (tpoints >= 0),							/* Check if tpoints is valid */
 	CHECK (cpoints >= 0),							/* Check if cpoints is valid */ 
 	CHECK (											/* Check if mstatus is valid */
-			UPPER(mstatus) = 'MEMBER'
-			OR UPPER(mstatus) = 'PREMIUM'
-			OR UPPER(mstatus) = 'VIP'
+			mstatus = 'MEMBER'
+			OR mstatus = 'PREMIUM'
+			OR mstatus = 'VIP'
 		  )
 );
 
@@ -78,18 +78,15 @@ CREATE TABLE Ride (
 	pmax integer,									/* Maximum passengers driver accepts*/
 	origin varchar(20),								/* Place to pick passenger up */
 	dest varchar(20),								/* Destination: Place to drop passenger off */
-	ptime time,										/* Pick-up time */
-	pdate date,										/* Pick-up date */
+	pdatetime timestamp,
 	dtime time DEFAULT NULL,						/* Drop-off time */
 	min_cost integer NOT NULL,						/* Minimum bid price */
 	curr_bids integer DEFAULT 0,					/* Current number of bidders */
 	FOREIGN KEY (uname, plate_num) REFERENCES Car
 		ON DELETE CASCADE,
-	PRIMARY KEY (uname, plate_num, origin, dest, ptime, pdate),
-	CHECK (											/* Check if the ride is */
-			pdate > current_date					/* at least 1hour from time of registration */
-			OR
-			(pdate = current_date AND ptime > (current_time + INTERVAL '1 hour'))
+	PRIMARY KEY (uname, plate_num, origin, dest, pdatetime),
+	CHECK (											/* Check if the ride is 1hr from now*/
+			pdatetime > (current_timestamp + INTERVAL '1 hour')
 		  ),
 	CHECK (min_cost > 0),
 	CHECK (pmax > 0)								/* Check if pmax is valid */
@@ -115,9 +112,9 @@ CREATE TABLE Reward (
 	rcode char(7) PRIMARY KEY,						/* Reward code (Eg. ABC0000) */
 	expired boolean DEFAULT false,					/* States if reward has expired */
 	CHECK (											/* D = Discount, P = Point */
-			UPPER(rcode) LIKE 'D%'
+			rcode LIKE 'D%'
 		   	OR
-			UPPER(rcode) LIKE 'R%'
+			rcode LIKE 'R%'
 		  )
 );
 
@@ -145,7 +142,7 @@ CREATE TABLE Obtains (								/* Passenger has... */
 			current_timestamp + interval '3 months'
 		),
 	redeemed boolean DEFAULT FALSE,				/* States if the discount has been redeemed */
-	PRIMARY KEY (uname, rcode, expdate),
+	PRIMARY KEY (uname, rcode, expdate)
 );
 
 CREATE TABLE Bid (
@@ -154,22 +151,19 @@ CREATE TABLE Bid (
 	plate_num varchar(8),
 	origin varchar(20),
 	dest varchar(20),
-	ptime time,
-	pdate date,	
+	pdatetime timestamp,
 	won boolean DEFAULT FALSE,						/* States if the passenger has won the bid */
 	price integer NOT NULL,							/* Price of the bid */
 	btime time DEFAULT current_time,				/* Time of bid, updates when User updates Bid to change the bid price */
 	FOREIGN KEY (puname)
 		REFERENCES Passenger (uname)
 		ON DELETE CASCADE,
-	FOREIGN KEY (duname, plate_num, origin, dest, ptime, pdate)
-		REFERENCES Ride (uname, plate_num, origin, dest, ptime, pdate)
+	FOREIGN KEY (duname, plate_num, origin, dest, pdatetime)
+		REFERENCES Ride (uname, plate_num, origin, dest, pdatetime)
 		ON DELETE CASCADE,
-	PRIMARY KEY (puname, duname, plate_num, origin, dest, ptime, pdate),
+	PRIMARY KEY (puname, duname, plate_num, origin, dest, pdatetime),
 	CHECK (											/* Check that bids is 1hr before ride */
-			(pdate = current_date AND ptime > current_time + INTERVAL '1 hour')
-			OR
-			pdate > current_date
+			pdatetime > current_timestamp + INTERVAL '1 hour'
 		  ),
 	CHECK (puname <> duname),						/* Not the same person */
 	CHECK (price > 0)								/* Checks if the price is valid */
@@ -184,22 +178,21 @@ CREATE TABLE Transactions (
 	plate_num varchar(8),
 	origin varchar(20),
 	dest varchar(20),
-	ptime time,
-	pdate date,
+	pdatetime timestamp,
 	r_redeem char (7) DEFAULT NULL,
 	oprice integer,									/* AMount received by Driver */
 	tprice integer,									/* Total price Passenger paid */
-	prating integer,								/* Rating given to passenger by driver */
-	drating integer,								/* Rating given to driver by passenger */
+	prating numeric (3,2),								/* Rating given to passenger by driver */
+	drating numeric (3,2),								/* Rating given to driver by passenger */
 	ptype varchar(7),
 	closed boolean DEFAULT FALSE,
 	FOREIGN KEY (puname)
 		REFERENCES Passenger (uname),
 	FOREIGN KEY (r_redeem)
 		REFERENCES Reward (rcode),
-	FOREIGN KEY (duname, plate_num, origin, dest, ptime, pdate)
-		REFERENCES Ride (uname, plate_num, origin, dest, ptime, pdate),
-	PRIMARY KEY (puname, duname, plate_num, origin, dest, ptime, pdate),
+	FOREIGN KEY (duname, plate_num, origin, dest, pdatetime)
+		REFERENCES Ride (uname, plate_num, origin, dest, pdatetime),
+	PRIMARY KEY (puname, duname, plate_num, origin, dest, pdatetime),
 	CHECK (puname <> duname),						/* Make sures that the passenger */
 													/* and driver are not the same person */
 	CHECK (											/* Passenger ratings: Range of 0 to 5 inclusive */
