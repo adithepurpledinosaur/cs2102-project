@@ -63,7 +63,7 @@ CREATE TABLE Car (
 	CHECK (											/* Check if the COE expiry: */
 			date_part(								/* Min 1 year before expiry to register */
 						'day',
-					 	(now()::timestamp - edate::timestamp)
+					 	(edate::timestamp - now()::timestamp)
 					 )
 			>= 365
 		  ),
