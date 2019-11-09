@@ -34,16 +34,43 @@ INSERT INTO Users VALUES ('Jay', '$2b$10$pmSW2VmR.fPKv7nUrA4Vq.uxpwgC.27Y4baSLHh
 INSERT INTO Users VALUES ('Kyl', '$2b$10$pmSW2VmR.fPKv7nUrA4Vq.uxpwgC.27Y4baSLHhnTZ8mVe5sayfEu', 'Kyl Bin Cob', 'Kyl', 'M', '2000-10-10', 'Sengkang', DEFAULT);
 INSERT INTO Users VALUES ('Lam', '$2b$10$pmSW2VmR.fPKv7nUrA4Vq.uxpwgC.27Y4baSLHhnTZ8mVe5sayfEu', 'Lam Bin Cob', 'Lam', 'M', '2001-10-10', 'Sengkang', DEFAULT);
 INSERT INTO Users VALUES ('Max', '$2b$10$pmSW2VmR.fPKv7nUrA4Vq.uxpwgC.27Y4baSLHhnTZ8mVe5sayfEu', 'Max Bin Cob', 'Max', 'F', '2010-10-10', 'Sengkang', DEFAULT);
+INSERT INTO Users VALUES ('Nex', '$2b$10$pmSW2VmR.fPKv7nUrA4Vq.uxpwgC.27Y4baSLHhnTZ8mVe5sayfEu', 'Nex Bin Cob', 'Nex', 'F', '2011-10-10', 'Sengkang', DEFAULT);
+INSERT INTO Users VALUES ('Oat', '$2b$10$pmSW2VmR.fPKv7nUrA4Vq.uxpwgC.27Y4baSLHhnTZ8mVe5sayfEu', 'Oat Bin Cob', 'Oat', 'M', '2012-10-10', 'Sengkang', DEFAULT);
+INSERT INTO Users VALUES ('Prim', '$2b$10$pmSW2VmR.fPKv7nUrA4Vq.uxpwgC.27Y4baSLHhnTZ8mVe5sayfEu', 'Primrose', 'Prim', 'F', '2012-12-10', 'Sengkang', DEFAULT);
+INSERT INTO Users VALUES ('Qirrila', '$2b$10$pmSW2VmR.fPKv7nUrA4Vq.uxpwgC.27Y4baSLHhnTZ8mVe5sayfEu', 'Qirrila Varrock', 'Qirrila', 'F', '2013-01-10', 'Sengkang', DEFAULT);
+INSERT INTO Users VALUES ('Razzal', '$2b$10$pmSW2VmR.fPKv7nUrA4Vq.uxpwgC.27Y4baSLHhnTZ8mVe5sayfEu', 'Razzal Mazzal', 'Razal', 'M', '2013-02-10', 'Sengkang', DEFAULT);
+INSERT INTO Users VALUES ('Suzy', '$2b$10$pmSW2VmR.fPKv7nUrA4Vq.uxpwgC.27Y4baSLHhnTZ8mVe5sayfEu', 'Suzy Merric', 'Suzy', 'F', '2013-04-10', 'Sengkang', DEFAULT);
+INSERT INTO Users VALUES ('Tuxanna', '$2b$10$pmSW2VmR.fPKv7nUrA4Vq.uxpwgC.27Y4baSLHhnTZ8mVe5sayfEu', 'Tuxanna Verrych', 'Tuxanna', 'F', '2014-10-10', 'Sengkang', DEFAULT);
+INSERT INTO Users VALUES ('Ursula', '$2b$10$pmSW2VmR.fPKv7nUrA4Vq.uxpwgC.27Y4baSLHhnTZ8mVe5sayfEu', 'Ursula Matrova', 'Ursula', 'F', '2015-10-10', 'Sengkang', DEFAULT);
+INSERT INTO Users VALUES ('Vex', '$2b$10$pmSW2VmR.fPKv7nUrA4Vq.uxpwgC.27Y4baSLHhnTZ8mVe5sayfEu', 'Vex Ahlia', 'Vex', 'F', '2009-12-10', 'Sengkang', DEFAULT);
+INSERT INTO Users VALUES ('Winter', '$2b$10$pmSW2VmR.fPKv7nUrA4Vq.uxpwgC.27Y4baSLHhnTZ8mVe5sayfEu', 'Winter Schnee', 'Winter', 'F', '2016-10-10', 'Sengkang', DEFAULT);
+INSERT INTO Users VALUES ('Xanathan', '$2b$10$pmSW2VmR.fPKv7nUrA4Vq.uxpwgC.27Y4baSLHhnTZ8mVe5sayfEu', 'Xanathan Gum', 'Xanathan', 'M', '2017-10-10', 'Sengkang', DEFAULT);
+INSERT INTO Users VALUES ('Yvonne', '$2b$10$pmSW2VmR.fPKv7nUrA4Vq.uxpwgC.27Y4baSLHhnTZ8mVe5sayfEu', 'Yvonne Lim Ah Kow', 'Yvonne', 'F', '2018-10-10', 'Sengkang', DEFAULT);
+INSERT INTO Users VALUES ('Zulrah', '$2b$10$pmSW2VmR.fPKv7nUrA4Vq.uxpwgC.27Y4baSLHhnTZ8mVe5sayfEu', 'Zulrah Bin Ali', 'Zulrah', 'M', '2018-10-10', 'Sengkang', DEFAULT);
 
 INSERT INTO Driver VALUES ('Ali', DEFAULT);
 INSERT INTO Driver VALUES ('Bob', DEFAULT);
 INSERT INTO Driver VALUES ('Cob', DEFAULT);
 INSERT INTO Driver VALUES ('Dad', DEFAULT);
+INSERT INTO Driver VALUES ('Nex', DEFAULT);
+INSERT INTO Driver VALUES ('Oat', DEFAULT);
+INSERT INTO Driver VALUES ('Prim', DEFAULT);
+INSERT INTO Driver VALUES ('Qirrila', DEFAULT);
+INSERT INTO Driver VALUES ('Razzal', DEFAULT);
+INSERT INTO Driver VALUES ('Suzy', DEFAULT);
 
 INSERT INTO Car VALUES ('Ali', 'SGX9123A', 3, 'Toyota', '2029-10-08');
+INSERT INTO Car VALUES ('Ali', 'SGX9245L', 3, 'Mazda', '2029-10-08');
+INSERT INTO Car VALUES ('Ali', 'SGX3542Q', 3, 'Lexus', '2029-10-08');
 INSERT INTO Car VALUES ('Bob', 'SGX9123B', 5, 'Mazda', '2028-10-08');
 INSERT INTO Car VALUES ('Cob', 'SGX9123C', 3, 'Honda', '2027-10-08');
-INSERT INTO Car VALUES ('Dad', 'SGX9123D', 5, 'Lambo', '2026-10-08');
+INSERT INTO Car VALUES ('Dad', 'SGX9123D', 5, 'Lambo', '2024-10-08');
+INSERT INTO Car VALUES ('Nex', 'SGT9425D', 6, 'Nissan', '2023-10-08');
+INSERT INTO Car VALUES ('Oat', 'SGW9123D', 5, 'Lambo', '2025-10-08');
+INSERT INTO Car VALUES ('Prim', 'SGR9123D', 5, 'Mazda', '2027-10-08');
+INSERT INTO Car VALUES ('Qirrila', 'SMV9123D', 5, 'BMW', '2022-10-08');
+INSERT INTO Car VALUES ('Razzal', 'SPQ9123D', 3, 'Honda', '2021-10-08');
+INSERT INTO Car VALUES ('Suzy', 'SGR9123D', 3, 'Lambo', '2023-10-08');
 
 INSERT INTO Ride VALUES ('Bob', 'SGX9123B', 5, 'Sengkang', 'Hougang', '2019-11-08 12:00:00', DEFAULT, 3, DEFAULT);
 INSERT INTO Ride VALUES ('Bob', 'SGX9123B', 5, 'Sengkang', 'Hougang', '2019-11-10 12:00:00', DEFAULT, 3, DEFAULT);
