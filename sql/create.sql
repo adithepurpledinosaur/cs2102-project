@@ -94,10 +94,8 @@ CREATE TABLE Ride (
     /* Place to pick passenger up */
     dest varchar(20),
     /* Destination: Place to drop passenger off */
-    ptime time,
-    /* Pick-up time */
-    pdate date,
-    /* Pick-up date */
+    pdatetime timestamp,
+    /* Pick-up datetime */
     dtime time DEFAULT NULL,
     /* Drop-off time */
     min_cost integer NOT NULL,
@@ -105,13 +103,9 @@ CREATE TABLE Ride (
     curr_bids integer DEFAULT 0,
     /* Current number of bidders */
     FOREIGN KEY (uname, plate_num) REFERENCES Car ON DELETE CASCADE,
-    PRIMARY KEY (uname, plate_num, origin, dest, ptime, pdate),
-    CHECK (
-        /* Check if the ride is */
-        pdate > CURRENT_DATE
-        /* at least 1hour from time of registration */
-        OR (pdate = CURRENT_DATE
-            AND ptime > (CURRENT_TIME + INTERVAL '1 hour'))),
+    PRIMARY KEY (uname, plate_num, origin, dest, pdatetime),
+    CHECK (pdatetime > (CURRENT_TIMESTAMP + INTERVAL '1 hour')),
+    /* Check if the ride is at least 1hour from time of registration or update */
     CHECK (min_cost > 0),
     CHECK (pmax > 0)
     /* Check if pmax is valid */
@@ -186,8 +180,7 @@ CREATE TABLE Bid (
     plate_num integer,
     origin varchar(20),
     dest varchar(20),
-    ptime time,
-    pdate date,
+    pdatetime timestamp,
     won boolean DEFAULT FALSE,
     /* States if the passenger has won the bid */
     price integer NOT NULL,
@@ -195,11 +188,9 @@ CREATE TABLE Bid (
     btime time DEFAULT CURRENT_TIME,
     /* Time of bid, updates when User updates Bid to change the bid price */
     FOREIGN KEY (puname) REFERENCES Passenger (uname) ON DELETE CASCADE,
-    FOREIGN KEY (duname, plate_num, origin, dest, ptime, pdate) REFERENCES Ride (uname, plate_num, origin, dest, ptime, pdate) ON DELETE CASCADE,
-    PRIMARY KEY (puname, duname, plate_num, origin, dest, ptime, pdate),
-    CHECK ((pdate = CURRENT_DATE
-            AND ptime > CURRENT_TIME + INTERVAL '1 hour')
-        OR pdate > CURRENT_DATE),
+    FOREIGN KEY (duname, plate_num, origin, dest, pdatetime) REFERENCES Ride (uname, plate_num, origin, dest, pdatetime) ON DELETE CASCADE,
+    PRIMARY KEY (puname, duname, plate_num, origin, dest, pdatetime),
+    CHECK (pdatetime > (CURRENT_TIMESTAMP + INTERVAL '1 hour')),
     /* Check that time passenger bids is 1hr before ride */
     CHECK (puname <> duname),
     /* Make sures that the passenger and driver are not the same person */
@@ -216,8 +207,7 @@ CREATE TABLE Transactions (
     plate_num integer,
     origin varchar(20),
     dest varchar(20),
-    ptime time,
-    pdate date,
+    pdatetime timestamp,
     --r_issue char(7),
     r_redeem char(7) DEFAULT NULL,
     oprice integer,
@@ -235,8 +225,8 @@ CREATE TABLE Transactions (
     -- 	REFERENCES Reward (rcode),
 
     FOREIGN KEY (r_redeem) REFERENCES Reward (rcode),
-    FOREIGN KEY (duname, plate_num, origin, dest, ptime, pdate) REFERENCES Ride (uname, plate_num, origin, dest, ptime, pdate),
-    PRIMARY KEY (puname, duname, plate_num, origin, dest, ptime, pdate),
+    FOREIGN KEY (duname, plate_num, origin, dest, pdatetime) REFERENCES Ride (uname, plate_num, origin, dest, pdatetime),
+    PRIMARY KEY (puname, duname, plate_num, origin, dest, pdatetime),
     CHECK (puname <> duname),
     /* Make sures that the passenger */
     /* and driver are not the same person */
