@@ -7,6 +7,7 @@
 <body>
     <% include partial/navbar.ejs %>
     <% include partial/msg.ejs %>
+    <br>
     <h1>My cars</h1>
     <table class="table">
         <thead class="thead-light">
@@ -27,6 +28,7 @@
                     <td><%= row.num_seats %></td>
                     <td><%= row.edate.toISOString().split('T')[0] %></td>
                     <td>
+                        <a href="/addride?plate_num=<%= encodeURI(row.plate_num) %>">New Ride</a> |
                         <a href="/editcar?plate_num=<%= encodeURI(row.plate_num) %>">Edit</a> |
                         <a href="/deletecar?plate_num=<%= encodeURI(row.plate_num) %>">Delete</a>
                     </td>
@@ -37,7 +39,7 @@
     <h1>Add a car</h1>
     <form action="/addcar" role="form" method="post">
         <div class="form-group">
-            <label>Plate number (just the numbers for now) <input type="number" min="1" max="9999" class="form-control" name="plate_num" placeholder="1234"></label>
+            <label>Plate number <input type="text" class="form-control" name="plate_num" placeholder="SGH1234X"></label>
         </div>
         <div class="form-group">
             <label>Model (in 7 chars) <input type="text" class="form-control" name="model" placeholder="GTR"></label>

@@ -34,20 +34,94 @@ function initRouter(app) {
     app.get('/mycars', passport.authMiddleware(), show_cars);
     app.post('/addcar', passport.authMiddleware(), add_car);
     // these car-related API take in the plate number via query string which is ensured to exist via the appropriately-named middleware
-    app.get('/editcar', passport.authMiddleware(), ensure_query_string, show_editcar);
-    app.post('/editcar', passport.authMiddleware(), ensure_query_string, do_editcar);
-    app.get('/deletecar', passport.authMiddleware(), ensure_query_string, do_deletecar);
+    const ensure_platenumber = ensure_query_has(['plate_num'], withMsg("/mycars", "you need to specify a car"));
+    app.get('/editcar', passport.authMiddleware(), ensure_platenumber, show_editcar);
+    app.post('/editcar', passport.authMiddleware(), ensure_platenumber, do_editcar);
+    app.get('/deletecar', passport.authMiddleware(), ensure_platenumber, do_deletecar);
+
+    app.get('/addride', passport.authMiddleware(), ensure_platenumber, show_addride);
+    app.post('/addride', passport.authMiddleware(), ensure_platenumber, do_addride);
+
+    app.get('/rides', passport.authMiddleware(), get_rides);
+    app.get('/rideadmin', passport.authMiddleware(), show_rideadmin);
+    app.get('/deleteride', passport.authMiddleware(),
+        ensure_query_has(['plate_num', 'origin', 'dest', 'pdatetime'], withMsg("/rideadmin","")),
+        delete_ride);
+
+    app.get('/rewards', passport.authMiddleware(), show_rewards);
+    app.get('/benefits', passport.authMiddleware(), show_benefits);
+
+    app.post('/updatebid', passport.authMiddleware(), update_bid);
 }
 
+function update_bid(req, res, next) {
+    if (!['price', 'uname', 'plate_num', 'origin', 'dest', 'pdatetime'].every(x => req.body[x])) {
+        return res.redirect(withMsg("/rides", "bad request"));
+    }
+    const bid_amount = req.body.price;
+    if (bid_amount == 0) {
+        pool.query(sql_query.query.delete_bid, [req.user.username, req.body.uname, req.body.plate_num, req.body.origin, req.body.dest, req.body.pdatetime])
+            .then(() => res.redirect(withMsg("/rides", "bid retracted")))
+            .catch(() => res.redirect(withMsg("/rides", "cannot retract bid, was it there? too late?")));
+    } else {
+        pool.query(sql_query.query.upsert_bid, [req.user.username, req.body.uname, req.body.plate_num, req.body.origin, req.body.dest, req.body.pdatetime, bid_amount])
+            .then(data => {
+                if (data.rowCount != 1) { throw new Error("not inserted"); }
+                res.redirect(withMsg("/rides", "bid updated"))
+            })
+            .catch(() => res.redirect(withMsg("/rides", "cannot update bid, too low or too late?")));
+    }
+}
+
+const show_rewards = (req, res, next) =>
+    pool.query(sql_query.query.get_drivers_rides, [req.user.username])
+        .then(data => render(req, res, 'rewards', {rows: data.rows}));
+
+const show_benefits = (req, res, next) =>
+    pool.query(sql_query.query.get_drivers_rides, [req.user.username])
+        .then(data => render(req, res, 'benefits', {rows: data.rows}));
+
+const delete_ride = (req, res, next) =>
+    pool.query(sql_query.query.delete_ride, [req.user.username, req.query.plate_num, req.query.origin, req.query.dest, req.query.pdatetime])
+        .then(() => res.redirect(withMsg("/rideadmin", "ride deleted")))
+        .catch(() => res.redirect(withMsg("/rideadmin", "invalid delete attempt")))
+
+const show_rideadmin = (req, res, next) =>
+    pool.query(sql_query.query.get_drivers_rides, [req.user.username])
+        .then(data => render(req, res, 'rideadmin', {rows: data.rows}));
+
+const get_rides = (req, res, next) =>
+    pool.query(sql_query.query.get_rides, [req.user.username, `%${req.query['search'] || ''}%`])
+        .then(data => render(req, res, 'rides', {rows: data.rows, search: req.query['search']}));
+
+function do_addride(req, res, next) {
+    pool.query(sql_query.query.create_ride, [req.user.username, req.query.plate_num, req.body.pmax, req.body.origin, req.body.dest, req.body.date + ' ' + req.body.time, req.body.dtime || null, req.body.min_cost])
+        .then(data => {
+            if (data.rowCount != 1) {
+                throw new Error("not inserted");
+            }
+            res.redirect(withMsg("/rideadmin", "ride added"))
+        })
+        .catch(() => res.redirect(withMsg("/addride", "invalid ride information given") + "&plate_num=" + encodeURI(req.query.plate_num)));
+}
+function show_addride(req, res, next) {
+    pool.query(sql_query.query.get_car, [req.user.username, req.query.plate_num])
+        .then(data => {
+            if (data.rows.length == 0) {
+                throw new Error("You don't own this car");
+            }
+            render(req, res, 'addride', {row: data.rows[0]});
+        })
+        .catch(() => res.redirect(withMsg("/mycars", "cannot use unregistered car")));
+}
 function do_deletecar(req, res, next) {
     pool.query(sql_query.query.delete_car, [req.user.username, req.query.plate_num])
         .then(() => res.redirect(withMsg("/mycars", "car (and all rides associated) are deleted")))
         .catch(() => res.redirect(withMsg("/mycars", "nothing to delete it appears like")));
 }
-function ensure_query_string(req, res, next) {
-    return req.query['plate_num'] ?
-        next() :
-        res.redirect(withMsg("/mycars", "please choose car to edit/delete (if you followed a link here file a bug report)"));
+function ensure_query_has(keys, redirto) {
+    return (req, res, next) =>
+        keys.every(k => req.query[k]) ? next () : res.redirect(redirto);
 }
 function do_editcar(req, res, next) {
     pool.query(sql_query.query.update_car, [req.user.username, req.query.plate_num, req.body.model, req.body.num_seats, req.body.edate])
@@ -62,7 +136,7 @@ function show_editcar(req, res, next) {
             }
             render(req, res, 'editcar', {row: data.rows[0]});
         })
-        .catch(() => res.redirect(withMsg("/mycars", "stop trying to edit cars you don't own")));
+        .catch(() => res.redirect(withMsg("/mycars", "cannot use unregistered car")));
 }
 
 function show_cars(req, res, next) {

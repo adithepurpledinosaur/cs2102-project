@@ -6,36 +6,72 @@
 </head>
 <body>
     <% include partial/navbar.ejs %>
+    <br>
     <h1>Hi <%= username %></h1>
     <% include partial/msg.ejs %>
+    <h2>My account</h2>
     <table class="table">
         <thead class="thead-light">
             <tr>
-                <th scope="col">User</th>
+                <th scope="col">Action</th>
+                <th scope="col">Details</th>
             </tr>
         </thead>
         <tbody>
-            <tr><td><a href="/updateprofile">Update my personal information</a></td></tr>
-            <tr><td><a href="/logout">Logout</a></td></tr>
+            <tr>
+                <td><a href="/updateprofile">Update profile</a></td>
+                <td>Update your personal information</td>
+            </tr>
+            <tr><td><a href="/logout">Logout</a></td><td></td></tr>
         </tbody>
+    </table>
 
+    <h2>Passenger</h2>
+    <table class="table">
         <thead class="thead-light">
             <tr>
-                <th scope="col">Passenger portal</th>
+                <th scope="col">Action</th>
+                <th scope="col">Details</th>
             </tr>
         </thead>
         <tbody>
-            <tr><td><a href="/">to make</a></td></tr>
+            <tr>
+                <td><a href="/rides">Find rides</a></td>
+                <td>Find open rides</td>
+            </tr>
+            <tr>
+                <td><a href="/rewards">View rewards</a></td>
+                <td>View and claim rewards using your points</td>
+            </tr>
         </tbody>
+    </table>
 
+    <h2>Driver</h2>
+    <table class="table">
         <thead class="thead-light">
             <tr>
-                <th scope="col">Driver portal</th>
+                <th scope="col">Action</th>
+                <th scope="col">Details</th>
             </tr>
         </thead>
         <tbody>
-            <tr><td><a href="/unlockdriver">Unlock driver features</a></td></tr>
-            <tr><td><a href="/mycars">Manage my cars</a></td></tr>
+            <tr>
+                <td><a href="/unlockdriver">Unlock driver features</a></td>
+                <td>Start driving for us</td>
+            </tr>
+            <tr>
+                <td><a href="/mycars">Manage my cars</a></td>
+                <td>Register, update and de-register cars with us,
+                you can also publish new rides that passengers can sign up for</td>
+            </tr>
+            <tr>
+                <td><a href="/rideadmin">Manage my rides</a></td>
+                <td>Manage or cancel rides that you published</td>
+            </tr>
+            <tr>
+                <td><a href="/benefits">View benefits</a></td>
+                <td>View the total incentives you have earned</td>
+            </tr>
         </tbody>
     </table>
 </body>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>All Rides</title>
+    <% include partial/header.ejs %>
+</head>
+<body>
+    <% include partial/navbar.ejs %>
+    <% include partial/msg.ejs %>
+    <br>
+    <h1>All Rides</h1>
+    <form method="get">
+        <div class="form-group">
+            <input type="text" class="form-control" name="search" placeholder="Filter by origin/destination">
+        </div>
+    </form>
+    <p>As with CORS, bidding 0 retracts a bid.</p>
+    <table class="table">
+        <thead class="thead-light">
+            <!-- uname | plate_num | num_seats | model |   edate    | pmax | origin | dest |      pdatetime      | dtime | min_cost | curr_bids
+            -->
+            <tr>
+                <th scope="col">Driver</th>
+                <th scope="col">Plate number</th>
+                <th scope="col">Model</th>
+                <th scope="col">Available seats</th>
+                <th scope="col">From</th>
+                <th scope="col">To</th>
+                <th scope="col">Departure time</th>
+                <th scope="col">ETA</th>
+                <th scope="col">Bidders</th>
+                <th scope="col">Minimum bid</th>
+                <th scope="col">Your bid</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% for(let row of rows) { %>
+                <tr>
+                    <td><%= row.uname %></td>
+                    <td><%= row.plate_num %></td>
+                    <td><%= row.model %></td>
+                    <td><%= row.pmax %></td>
+                    <td><%= row.origin %></td>
+                    <td><%= row.dest %></td>
+                    <td><%= row.pdatetime.toLocaleString() %></td>
+                    <td><%= row.dtime || "not specified" %></td>
+                    <td><%= row.curr_bids %></td>
+                    <td><%= row.min_cost %></td>
+                    <td>
+                        <form action="/updatebid" method="post">
+                            <input type="number" class="form-control" min="0" name="price" value="<%= row.yourbid || 0 %>" >
+                            <!-- send enough of current context over -->
+                            <%_ row.pdatetime = row.pdatetime.toString().split(" GMT")[0];
+                            for (const x of ['uname', 'plate_num', 'origin', 'dest', 'pdatetime']) { _%>
+                                    <input type="hidden" name="<%= x %>" value="<%= row[x] %>">
+                            <%_ } _%>
+                            <input type="hidden" name="search" value="<%= search %>">
+                            <input type="submit" class="form-control btn btn-primary" value="Update bid">
+                        </form>
+                    </td>
+                </tr>
+            <% } %>
+        </tbody>
+    </table>
+</body>
+</html>

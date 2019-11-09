@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My jobs</title>
+    <% include partial/header.ejs %>
+</head>
+<body>
+    <% include partial/navbar.ejs %>
+    <% include partial/msg.ejs %>
+    <%
+    const genQueryString = (row, args) => args.map(a => `${a}=${encodeURI(row[a])}`).join('&')
+    %>
+    <br>
+    <h1>My Rides</h1>
+    <p>To add a ride <a href="/mycars">choose which car you want to use</a> first.</p>
+    <table class="table">
+        <thead class="thead-light">
+            <tr>
+                <th scope="col">Plate No.</th>
+                <th scope="col">Model</th>
+                <th scope="col">Available seats</th>
+                <th scope="col">From</th>
+                <th scope="col">To</th>
+                <th scope="col">Departure time</th>
+                <th scope="col">ETA</th>
+                <th scope="col">Bidders</th>
+                <th scope="col">Minimum bid</th>
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% for(let row of rows) { %>
+                <tr>
+                    <td><%= row.plate_num %></td>
+                    <td><%= row.model %></td>
+                    <td><%= row.pmax %></td>
+                    <td><%= row.origin %></td>
+                    <td><%= row.dest %></td>
+                    <td><%= row.pdatetime.toLocaleString() %></td>
+                    <td><%= row.dtime || "not specified" %></td>
+                    <td><%= row.curr_bids %></td>
+                    <td><%= row.min_cost %></td>
+                    <td>
+                        <% row.pdatetime = row.pdatetime.toString().split(" GMT")[0]; %>
+                        <a href="/deleteride?<%= genQueryString(row, ['plate_num', 'origin', 'dest', 'pdatetime']) %>">Delete ride</a> |
+                        View and resolve bids, finish ride
+                    </td>
+                </tr>
+            <% } %>
+        </tbody>
+    </table>
+</body>
+</html>
