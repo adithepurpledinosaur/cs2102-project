@@ -42,12 +42,16 @@ function initRouter(app) {
     app.post('/addride', passport.authMiddleware(), ensure_query_string, do_addride);
 
     app.get('/rides', passport.authMiddleware(), get_rides);
+    app.get('/rideadmin', passport.authMiddleware(), show_rideadmin);
 }
 
-function get_rides(req, res, next) {
+const show_rideadmin = (req, res, next) =>
+    pool.query(sql_query.query.get_drivers_rides, [req.user.username])
+        .then(data => render(req, res, 'rideadmin', {rows: data.rows}));
+
+const get_rides = (req, res, next) =>
     pool.query(sql_query.query.get_rides, [`%${req.query['search'] || ''}%`])
         .then(data => render(req, res, 'rides', {rows: data.rows}));
-}
 
 function do_addride(req, res, next) {
     pool.query(sql_query.query.create_ride, [req.user.username, req.query.plate_num, req.body.pmax, req.body.origin, req.body.dest, req.body.date + ' ' + req.body.time, req.body.dtime || null, req.body.min_cost])
