@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+    <% include partial/header.ejs %>
+</head>
+<body>
+    <% include partial/navbar.ejs %>
+    <h1>Hi <%= username %></h1>
+    <% include partial/msg.ejs %>
+    <table class="table">
+        <thead class="thead-light">
+            <tr>
+                <th scope="col">User</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td><a href="/updateprofile">Update my personal information</a></td></tr>
+            <tr><td><a href="/logout">Logout</a></td></tr>
+        </tbody>
+
+        <thead class="thead-light">
+            <tr>
+                <th scope="col">Passenger portal</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td><a href="/">to make</a></td></tr>
+        </tbody>
+
+        <thead class="thead-light">
+            <tr>
+                <th scope="col">Driver portal</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td><a href="/unlockdriver">Unlock driver features</a></td></tr>
+            <tr><td><a href="/mycars">Manage my cars</a></td></tr>
+        </tbody>
+    </table>
+</body>
+</html>
