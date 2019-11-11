@@ -55,21 +55,21 @@ function initRouter(app) {
 }
 
 function update_bid(req, res, next) {
-    if (!['price', 'uname', 'plate_num', 'origin', 'dest', 'pdatetime'].every(x => req.body[x])) {
+    if (!['price', 'uname', 'plate_num', 'origin', 'dest', 'pdatetime', 'search'].every(x => req.body[x])) {
         return res.redirect(withMsg("/rides", "bad request"));
     }
     const bid_amount = req.body.price;
     if (bid_amount == 0) {
         pool.query(sql_query.query.delete_bid, [req.user.username, req.body.uname, req.body.plate_num, req.body.origin, req.body.dest, req.body.pdatetime])
-            .then(() => res.redirect(withMsg("/rides", "bid retracted")))
-            .catch(() => res.redirect(withMsg("/rides", "cannot retract bid, was it there? too late?")));
+            .then(() => res.redirect(withMsg("/rides", "bid retracted") + "&search=" + encodeURI(req.body.search)))
+            .catch(() => res.redirect(withMsg("/rides", "cannot retract bid, was it there? too late?") + "&search=" + encodeURI(req.body.search)));
     } else {
         pool.query(sql_query.query.upsert_bid, [req.user.username, req.body.uname, req.body.plate_num, req.body.origin, req.body.dest, req.body.pdatetime, bid_amount])
             .then(data => {
                 if (data.rowCount != 1) { throw new Error("not inserted"); }
-                res.redirect(withMsg("/rides", "bid updated"))
+                res.redirect(withMsg("/rides", "bid updated") + "&search=" + encodeURI(req.body.search))
             })
-            .catch(() => res.redirect(withMsg("/rides", "cannot update bid, too low or too late?")));
+            .catch(() => res.redirect(withMsg("/rides", "cannot update bid, too low or too late?") + "&search=" + encodeURI(req.body.search)));
     }
 }
 
